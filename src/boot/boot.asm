@@ -56,14 +56,11 @@ step2:
 
 ; GDT - Global Descriptor Table.
 ; The entries in the GDT are 8 bytes long and form a table like this:
-; +---------------------------+
 ; |Address	        | Content |
 ; |GDTR Offset + 0	| Null    | -> Empty 8 bytes
 ; |GDTR Offset + 8	| Entry 1 | -> CS: code segment
 ; |GDTR Offset + 16	| Entry 2 | -> DS: data segment
 ; |GDTR Offset + 24	| Entry 3 | -> NO ENTRY
-; |...               |...     |
-; +---------------------------+
 ;
 ; The first entry in the GDT (Entry 0) should always be null and subsequent
 ; entries should be used instead.
