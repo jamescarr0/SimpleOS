@@ -121,9 +121,21 @@ gdt_descriptor:
                                 ; structure.
     dd gdt_start                ; 0-31 bits: Offset
 
+; Swtich to 32 bit protected mode and set the data segments
+; NO ACCESS to BIOS.
 [BITS 32]
 load32:
+    mov ax, DATA_SEG
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov ebp, 0x00200000           
+    mov esp, ebp            ; Set stack pointer further in memory, as we can 
+                            ; now access more memory
     jmp $
+    
 
 times 510 - ($-$$) db 0     ; Fill upto 510 bytes of data
                             ; pad with 0's upto 510th byte
