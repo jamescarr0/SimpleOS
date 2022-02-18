@@ -1,2 +1,0 @@
-This data should be stored in another sector and read from disk to be displayed
- in the bootloader.
