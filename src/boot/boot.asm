@@ -5,16 +5,15 @@ BITS 16         ; Use 16bit Architecture, Real Mode, make sure assembler only
 CODE_SEG equ gdt_code - gdt_start   ; Calculate the CS offset
 DATA_SEG equ gdt_data - gdt_start   ; Calculate the DS offset
 
+_start:
+    jmp short start     ; Jump over the BIOS Partition Block Structure.
+    nop
+
 ; Fake BIOS Partition Block BPB structure (disk formatting information)
 ; First 3 bytes jump over the disk formatting information (the BPB)
 ; Pad reamaining with 33 bytes.
 ; If BIOS writes data to the usb drive it does not overwrite boot code
 ; It just overwrites our fake BPB structure.
-
-_start:
-    jmp short start
-    nop
-
 times 33 db 0
 
 start:
@@ -38,7 +37,8 @@ step2:
     mov ds, ax          ; Set Data segment
     mov es, ax          ; Set Extra segment
     mov ss, ax          ; Set stack segment to Zero
-    mov sp, 0x7c00      ; Set stack pointer
+    mov sp, 0x7c00      ; Set stack pointer. Stack grows down from offset 
+                        ; 0x7C00 toward 0x0000.
 
     sti ; Enable interrupts
 
@@ -131,8 +131,31 @@ load32:
     mov ebp, 0x00200000           
     mov esp, ebp            ; Set stack pointer further in memory, as we can 
                             ; now access more memory
-    jmp $
+
+check_A20_is_on:            ; Check A20 Line is enabled. Legacy Pain!
+    pushad
+    mov edi, 0x112345       ; Odd megabyte address
+    mov esi, 0x012345       ; Even megabyte address
+    mov [esi], esi          ; Store the value of esi (0x112345) into the location 
+    mov [edi], edi          ; pointed to by esi.  Same for edi.
+    cmpsd                   ; (if A20 line is cleared the two pointers would point 
+                            ; to the address 0x012345 that would contain 0x112345 (edi)) 
+                            ;compare addresses to see if the're equivalent.
+    popad
+    jne PModeMain           ; A20 has been enabled.
     
+    ; A20 NOT ENABLED, use fast A20 Gate to quickly enable A20 line.
+    ; A20 is an old legacy 'wrap around feature'
+    in al, 0x92
+    or al, 2
+    out 0x92, al
+    jmp PModeMain
+
+A20_is_on:
+    jmp PModeMain
+
+PModeMain:
+    jmp $
 
 times 510 - ($-$$) db 0     ; Fill upto 510 bytes of data
                             ; pad with 0's upto 510th byte
