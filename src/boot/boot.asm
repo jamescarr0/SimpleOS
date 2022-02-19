@@ -42,8 +42,7 @@ step2:
 
     sti ; Enable interrupts
 
-
-.load_protected:
+enable_protected_mode:      ; Enable and switch to 32 Bit Protected Mode.
     cli                     ; Disable interrupts
     lgdt[gdt_descriptor]    ; load GDT register with the start address of
                             ; the global descriptor table.
@@ -52,15 +51,18 @@ step2:
                             ; bit in the CR0 Reg (Control Register 0)
     mov cr0, eax            ; Apply the new value after applying OR mask
 
-    jmp CODE_SEG:load32
+    jmp CODE_SEG:load32     ; Load the CS and EIP with correct values (far jmp).
+                            ; This enters the now protected code segment.
 
 ; GDT - Global Descriptor Table.
 ; The entries in the GDT are 8 bytes long and form a table like this:
+; +---------------------------+
 ; |Address	        | Content |
 ; |GDTR Offset + 0	| Null    | -> Empty 8 bytes
 ; |GDTR Offset + 8	| Entry 1 | -> CS: code segment
 ; |GDTR Offset + 16	| Entry 2 | -> DS: data segment
 ; |GDTR Offset + 24	| Entry 3 | -> NO ENTRY
+; +---------------------------+
 ;
 ; The first entry in the GDT (Entry 0) should always be null and subsequent
 ; entries should be used instead.
@@ -70,7 +72,7 @@ gdt_null:           ; NULL Entry - Offset 0x00
     dd 0x0
     dd 0x0
 
-gdt_code:           ; CODE SEGMENT Offset 0x08
+gdt_code:           ; CODE SEGMENT Offset 0x08: ENTRY 1
     dw 0xffff       ; 0-15bits LIMIT: 0xfffff limit spans the full 4Gb address
                     ; space
     dw 0            ; 16-31 bits BASE: Address where segment begins (Will use
@@ -83,7 +85,7 @@ gdt_code:           ; CODE SEGMENT Offset 0x08
                     ; 52 - 55 bits (nibble, upper half of the byte)
     db 0            ; Base 56-63 bits
 
-gdt_data:           ; DATA SEGMENT Offset 0x10
+gdt_data:           ; DATA SEGMENT Offset 0x10: ENTRY 2
     dw 0xffff       ; 0-15bits LIMIT: 0xfffff limit spans the full 4Gb address
                     ; space
     dw 0            ; 16-31 bits BASE: Address where segment begins (Will use
@@ -118,44 +120,86 @@ gdt_descriptor:
                                 ; structure.
     dd gdt_start                ; 0-31 bits: Offset
 
-; Swtich to 32 bit protected mode and set the data segments
-; NO ACCESS to BIOS.
 [BITS 32]
-load32:
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000           
-    mov esp, ebp            ; Set stack pointer further in memory, as we can 
-                            ; now access more memory
 
-check_A20_is_on:            ; Check A20 Line is enabled. Legacy Pain!
-    pushad
-    mov edi, 0x112345       ; Odd megabyte address
-    mov esi, 0x012345       ; Even megabyte address
-    mov [esi], esi          ; Store the value of esi (0x112345) into the location 
-    mov [edi], edi          ; pointed to by esi.  Same for edi.
-    cmpsd                   ; (if A20 line is cleared the two pointers would point 
-                            ; to the address 0x012345 that would contain 0x112345 (edi)) 
-                            ;compare addresses to see if the're equivalent.
-    popad
-    jne PModeMain           ; A20 has been enabled.
+load32:                     ; Load kernel into memory and jump to it.
+    mov eax, 1              ; Logical Block Address (LBA)
+                            ; Starting disk sector to load from, (sector 1).
+                            ; Do not load 0 as this is the boot sector.
+    mov ecx, 100            ; Total number of sectors to load.
+    mov edi, 0x0100000      ; Address to load Kernel into
+    call ata_lba_read
     
-    ; A20 NOT ENABLED, use fast A20 Gate to quickly enable A20 line.
-    ; A20 is an old legacy 'wrap around feature'
-    in al, 0x92
-    or al, 2
-    out 0x92, al
-    jmp PModeMain
+    jmp CODE_SEG:0x0100000  ; Jump to the loaded kernel.
 
-A20_is_on:
-    jmp PModeMain
+ata_lba_read:
+    ; OUT instruction is talking to the bus on motherboard, and controller
+    ; is listening to us.
 
-PModeMain:
-    jmp $
+    mov ebx, eax            ; Backup the LBA.. just in case.
+
+    ; Send the highest 8 bits of the LBA to hard disk controller.
+    shr eax, 24
+    or eax, 0xe0            ; Select the MASTER DRIVE.
+    mov dx, 0x1F6
+    out dx, al
+    ; Finished sending the highest 8 bits of the lba.
+
+    ; Send the total sectors to read.
+    mov eax, ecx
+    mov dx, 0x1F2
+    out dx, al
+    ; Finished sending total sectors to read
+
+    ; Send more of the LBA
+    mov eax, ebx            ; Restore backup LBA
+    mov dx, 0x1F3
+    out dx, al
+    ; Finished sending more bits of the lba
+
+    ; Send more bits
+    mov dx, 0x1F4
+    mov eax, ebx            ; Restore backup
+    shr eax, 0
+    shr eax, 8
+    out dx, al
+    ; Finished sending more bits.
+
+    ; Sending upper 16 bits of the LBA
+    mov dx, 0x1f5
+    mov eax, ebx            ; Restore backup
+    shr eax, 16
+    ; Finished 16 bit sending
+
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ; Read all sectors into memory
+
+next_sector:
+    push ecx
+
+; Checking if we need to read again incase disk was not ready to read.
+try_again: 
+    mov dx, 0x1f7
+    in al, dx
+    test al, 8
+    jz try_again
+
+    ; Read 256 words at a time = 512 bytes, ie, 1 sector!
+    mov ecx, 256
+    mov dx, 0x1f0
+    rep insw            ; Read word from I/O port specified in dx
+                        ; to memory location specified in EDI
+                        ; edi set above to 1mb - 0x100000
+
+    pop ecx             ; Restore sector numbers to read.
+    loop next_sector    ; Auto decrement the sector count
+                        ; keep looping until all sectors are read.
+    ret
+
+
 
 times 510 - ($-$$) db 0     ; Fill upto 510 bytes of data
                             ; pad with 0's upto 510th byte
