@@ -1,5 +1,5 @@
 /cmake-build-debug/
 .idea/
 .vscode/
-bin/*.bin
-build/*.o
+/bin/
+/build/

@@ -37,4 +37,11 @@ check_A20_is_on:            ; Check A20 Line is enabled. Legacy Pain!
 PModeMain:
     call kernel_main
     jmp $
+
+                            ; Force Alignment, will always divide into 16 bytes.
+times 512 - ($-$$) db 0     ; As we are now mixing C code with assembly we need to make
+                            ; sure out assemby stays in alignment.  The C Compiler aligns
+                            ; to 16 bytes by default.  512 aligns into 16 perfectly fine
+                            ; and will solve any alignment issues we may encounter with
+                            ; mixing C and asm.
     
