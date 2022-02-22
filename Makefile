@@ -1,5 +1,5 @@
-CC=/home/james/opt/cross/bin/i686-elf-gcc
-LD=/home/james/opt/cross/bin/i686-elf-ld
+CC=/home/james/opt/cross-compiler/bin/i686-elf-gcc
+LD=/home/james/opt/cross-compiler/bin/i686-elf-ld
 
 INCLUDES = -Iinc
 
@@ -34,6 +34,15 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/kernel.o : src/kernel.c
 	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/kernel.c -o ./build/kernel.o
 
+./bin/os.bin:
+	make all
+
+run: ./bin/os.bin
+	qemu-system-x86_64 ./bin/os.bin
+
+debug: ./bin/os.bin
+	gdb -ex "target remote | qemu-system-x86_64 -hda ./bin/os.bin -S -gdb stdio" \
+		-ex "add-symbol-file ./build/kernelfull.o 0x100000"
 clean:
 	rm -rf ./bin/*.bin
 	rm -rf ./build/kernelfull.o $(FILES)
