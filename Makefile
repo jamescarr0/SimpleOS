@@ -1,5 +1,5 @@
-CC=/home/james/opt/cross-compiler/bin/i686-elf-gcc
-LD=/home/james/opt/cross-compiler/bin/i686-elf-ld
+CC=/home/james/opt/cross/bin/i686-elf-gcc
+LD=/home/james/opt/cross/bin/i686-elf-ld
 
 INCLUDES = -Iinc
 
@@ -8,7 +8,7 @@ FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
 FLAGS += -finline-functions -Wno-unused-functions -Wno-unused-label -Wno-cpp
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
-FILES = ./build/kernel.asm.o ./build/kernel.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -28,17 +28,20 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./bin/boot.bin: ./src/boot/boot.asm
 	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
 
-./build/kernel.asm.o: ./src/kernel.asm
-	nasm -f elf -g ./src/kernel.asm -o ./build/kernel.asm.o
+./build/kernel.asm.o: src/kernel/kernel.asm
+	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel.asm.o
 
-./build/kernel.o : src/kernel.c
-	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/kernel.c -o ./build/kernel.o
+./build/kernel.o : src/kernel/kernel.c
+	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/kernel/kernel.c -o ./build/kernel.o
+
+./build/stdio.o : src/stdio/stdio.c
+	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/stdio/stdio.c -o ./build/stdio.o
 
 ./bin/os.bin:
 	make all
 
-run: ./bin/os.bin
-	qemu-system-x86_64 ./bin/os.bin
+run: all
+	qemu-system-x86_64 -hda ./bin/os.bin
 
 debug: ./bin/os.bin
 	gdb -ex "target remote | qemu-system-x86_64 -hda ./bin/os.bin -S -gdb stdio" \
