@@ -1,14 +1,17 @@
-//
-// Created by james on 20/02/2022.
-//
+/**
+ * @page Kernel Entry: Main() function.
+ * @date 19/02/2022
+ * **Author:** James Carr
+ * ## Role
+ * Kernel entry point, main() function called from the assembly bootloader.
+ */
 
 #include "stdio.h"
-#include "memory.h"
 
 void main() {
 
     clear();
-    printf("Welcome to SimpleOS.\nAn operating system built from scratch.\n");
-    printf("You'd be crazy to ever use this in production !\n");
+    printf("Welcome to SimpleOS.\n");
+    printf("The simple operating system that currently does nothing :-)\n");
     
 }

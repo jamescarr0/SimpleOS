@@ -1,7 +1,10 @@
-//
-// Created by james on 23/02/2022.
-//
-
+/**
+ * @page Kernel header for string function prototypes.
+ * @date 23/02/2022
+ * **Author:** James Carr
+ * ## Role.
+ * Provides function prototypes for working with strings.
+ */
 #include <stddef.h>
 
 #ifndef SIMPLEOS_STRINGS_H
