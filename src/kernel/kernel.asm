@@ -1,6 +1,6 @@
 [BITS 32]
 global _start
-extern kernel_main
+extern main
 
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10
@@ -35,7 +35,7 @@ check_A20_is_on:            ; Check A20 Line is enabled. Legacy Pain!
     out 0x92, al
 
 PModeMain:
-    call kernel_main
+    call main               ; kernel.c
     jmp $
 
                             ; Force Alignment, will always divide into 16 bytes.
