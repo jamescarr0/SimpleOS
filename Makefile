@@ -5,7 +5,7 @@ INCLUDES = -Iinc
 
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels
 FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
-FLAGS += -finline-functions -Wno-unused-functions -Wno-unused-label -Wno-cpp
+FLAGS += -finline-functions -Wno-unused-label -Wno-cpp
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o

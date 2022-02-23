@@ -7,7 +7,7 @@
 #ifndef SIMPLEOS_STRINGS_H
 #define SIMPLEOS_STRINGS_H
 
-size_t strlen(char *str);
+size_t strlen(const char *str);
 /* Returns the length of a NULL terminated string.
  * Parameters:
  * char *str: A string.
