@@ -8,7 +8,7 @@ FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
 FLAGS += -finline-functions -Wno-unused-functions -Wno-unused-label -Wno-cpp
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -36,6 +36,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 ./build/stdio.o : src/stdio/stdio.c
 	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/stdio/stdio.c -o ./build/stdio.o
+
+./build/strings.o: src/strings/strings.c
+	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/strings/strings.c -o ./build/strings.o
 
 ./bin/os.bin:
 	make all
