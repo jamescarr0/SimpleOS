@@ -1,6 +1,10 @@
-//
-// Created by james on 23/02/2022.
-//
+/**
+ * @file Implements standard input and output streams.
+ * @date 23/02/2022
+ * **Author:** James Carr
+ * ## Role
+ * To establish functions providing input and output capabilities.
+ */
 
 #include <stdint.h>
 #include "strings.h"
@@ -14,32 +18,41 @@ static volatile uint16_t *video_memory = (volatile uint16_t *) 0xB8000;
 int terminal_col = 0;
 int terminal_row = 0;
 
+/**
+ * Text video_memory mode memory requires two bytes for every character on
+ * the screen.
+ *
+ * @param character ASCII character
+ * @param color Color code to set foreground color of ASCII character
+ * @return 16-bit (two-byte) value that can be sent to video memory.
+ */
 static uint16_t create_video_char(const char character, const int color) {
-    /* Video memory requires two bytes for every character on screen
-     * An ascii byte, and a colour code byte.
-     *
-     * Since x86 is little endian, bytes must be reversed.
-     * The colour code is shifted left one byte and then a bitwise OR mask is
-     * applied using the ASCII character byte.
-     * */
     return (color << 8) | character;
 }
 
+
+/**
+ * Sends the unit16_t (two byte character/color combination) directly to video
+ * memory.
+ *
+ * @param x X position of the character to be displayed on stdout
+ * @param y Y position of the character to be displayed on stdout
+ * @param character The ASCII character to display
+ * @param color The foreground color of the ASCII character
+ */
 static void send_to_video_memory(const int x, const int y, const char character, const int color) {
-    /* Sends the character and color two byte value directly to video memory
-     * at the x and y coordinates of the terminal.
-     *
-     * video_memory[cursor_position]
-     *
-     * */
     video_memory[(y * VGA_WIDTH) + x] = create_video_char(character, color);
 }
 
+
+/**
+ * Responsible for tracking the characters being sent to video memory and to identify
+ * escape sequences in the string such as newline.
+ *
+ * @param character
+ * @param color
+ */
 static void putchar(const char character, const int color) {
-    /* Keep track of the location of characters being sent to video memory.
-     * Detects when to wrap text to the next line and checks for escape
-     * sequences.
-     * */
     if(character == '\n') {
         terminal_row++;
         terminal_col = 0;
@@ -55,12 +68,11 @@ static void putchar(const char character, const int color) {
     }
 }
 
-void clear() {
-    /* Clears the terminal view of text and resets cursor position.
-     *
-     * Clear contents of video memory by placing white space chars the same
-     * colour as the terminal background.*/
 
+/**
+ * Clear the terminal and reset the terminal cursor x and y position to 0, 0.
+ */
+void clear(void) {
     video_memory = (volatile uint16_t *) 0xB8000;
     for (int y = 0; y < VGA_HEIGHT; ++y) {
         for (int x = 0; x < VGA_WIDTH; ++x)
@@ -70,8 +82,13 @@ void clear() {
     terminal_row = 0;
 }
 
+
+/**
+ * Write a NULL terminated string to standard output.
+ *
+ * @param str NULL terminated string to send to stdout.
+ */
 void printf(const char *const str) {
-    /* Printf! What more can we say :-) Happy days. */
     for (size_t i = 0; i < strlen(str); ++i) {
         putchar(str[i], FONT_COLOR);
     }

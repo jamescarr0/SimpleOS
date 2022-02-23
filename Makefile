@@ -5,7 +5,7 @@ INCLUDES = -Iinc
 
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels
 FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
-FLAGS += -finline-functions -Wno-unused-label -Wno-cpp
+FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o ./build/memory.o
@@ -32,16 +32,16 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel.asm.o
 
 ./build/kernel.o : src/kernel/kernel.c
-	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/kernel/kernel.c -o ./build/kernel.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/kernel/kernel.c -o ./build/kernel.o
 
 ./build/stdio.o : src/stdio/stdio.c
-	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/stdio/stdio.c -o ./build/stdio.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/stdio/stdio.c -o ./build/stdio.o
 
 ./build/strings.o: src/strings/strings.c
-	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/strings/strings.c -o ./build/strings.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/strings/strings.c -o ./build/strings.o
 
 ./build/memory.o: ./src/memory/memory.c
-	$(CC) $(INCLUDES) $(FLAGS) -std=c99 -c ./src/memory/memory.c -o ./build/memory.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory.o
 
 ./bin/os.bin:
 	make all
