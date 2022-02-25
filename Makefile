@@ -1,5 +1,5 @@
-CC=/home/james/opt/cross/bin/i686-elf-gcc
-LD=/home/james/opt/cross/bin/i686-elf-ld
+CC=i686-elf-gcc
+LD=i686-elf-ld
 
 INCLUDES = -Iinc
 
