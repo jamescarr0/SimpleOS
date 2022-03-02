@@ -1,0 +1,4 @@
+mkdir -p bin
+mkdir -p build/{idt,memory}
+make clean
+make run
