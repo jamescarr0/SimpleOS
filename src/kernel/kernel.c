@@ -19,6 +19,5 @@ void main() {
 
     // Initiliase the IDT
     idt_init();
-
-    irq0_test();
+    int a = (10*10) / 0;
 }
