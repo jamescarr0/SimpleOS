@@ -1,5 +1,7 @@
 [BITS 32]
 global _start
+global irq0_test
+
 extern main
 
 CODE_SEG equ 0x08
@@ -37,6 +39,9 @@ check_A20_is_on:            ; Check A20 Line is enabled. Legacy Pain!
 PModeMain:
     call main               ; kernel.c
     jmp $
+
+irq0_test:
+    int 0
 
                             ; Force Alignment, will always divide into 16 bytes.
 times 512 - ($-$$) db 0     ; As we are now mixing C code with assembly we need to make

@@ -8,7 +8,8 @@ FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
 FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o ./build/memory.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
+		./build/memory/memory.o ./build/idt/idt.asm.o ./build/idt/idt.c.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -40,8 +41,14 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/strings.o: src/strings/strings.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/strings/strings.c -o ./build/strings.o
 
-./build/memory.o: ./src/memory/memory.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory.o
+./build/memory/memory.o: ./src/memory/memory.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
+
+./build/idt/idt.asm.o: ./src/idt/idt.asm
+	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
+
+./build/idt/idt.c.o: ./src/idt/idt.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/idt.c -o ./build/idt/idt.c.o
 
 ./bin/os.bin:
 	make all
