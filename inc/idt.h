@@ -1,10 +1,10 @@
 /**
- * @file Interrupt Descriptor Table header.
+ * @file idt.h
+ * @author James Carr
+ * @brief IDT and IDTR type and function decleartions
+ * @version 0.1
  * @date 02/03/2022
- * **Author:** James Carr
- * ## Role
- * Create IDT and IDTR data structure declerations.
- * The IDT tells the CPU where the Interrupt Service routines are located.
+ * 
  */
 
 #ifndef SIMPLEOS_IDT_H

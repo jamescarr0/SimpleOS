@@ -1,9 +1,9 @@
 /**
- * @file Kernel Entry: Main() function.
- * @date 19/02/2022
- * **Author:** James Carr
- * ## Role
- * Kernel entry point, main() function called from the assembly bootloader.
+ * @file kernel.c
+ * @author James Carr
+ * @brief Kernel entry, C main() function called from kernerl.asm.
+ * @version 0.1
+ * @date 19/02/2002
  */
 
 #include "stdio.h"
