@@ -8,6 +8,7 @@
 
 #include "stdio.h"
 #include "idt.h"
+#include "io.h"
 
 void main() {
 
@@ -17,5 +18,8 @@ void main() {
 
     // Initiliase the IDT
     idt_init();
-    int a = (10*10) / 0;
+
+    io_write_byte(0x60, 0xAB);  // Dummy code to test write_byte driver.
+
+    int a = 10*2/0; // Dummy code to test IDT & IRQ0. Division by zero.
 }
