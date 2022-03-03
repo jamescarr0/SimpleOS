@@ -21,8 +21,8 @@
 #include "memory.h"
 #include "kernelconfig.h"
 
-idt32desc_t idt32desc_table[SIMPLEOS_MAX_INTERRUPTS];
-idt32desc_reg_t idtr_desc;
+idt_entry_t idt32desc_table[SIMPLEOS_MAX_INTERRUPTS];
+idtr_t idtr_desc;
 
 // IRQ0
 void isr_zero() {
@@ -37,7 +37,7 @@ void idt_init() {
     idtr_desc.size = sizeof(idt32desc_table) - 1;
     idtr_desc.offset = (uint32_t) idt32desc_table;
 
-    idt_set(0, isr_zero);
+    idt_set(0, isr_zero);   // Interrupt 0 - Divide by zero 
 
     // Load idt table - idt.asm
     idt_load(&idtr_desc);
@@ -45,9 +45,9 @@ void idt_init() {
 
 // Create Interrupt Service Routines
 void idt_set(const int IRQ_number, const void *const address) {
-    idt32desc_t *descriptor = &idt32desc_table[IRQ_number];
+    idt_entry_t *descriptor = &idt32desc_table[IRQ_number];
 
-    descriptor->offset_1 = (uint32_t) address & 0x0000FFFF;
+    descriptor->offset_1 = (uint32_t) address;
     descriptor->selector = KERNEL_CODE_SELECTOR;
     descriptor->zero = 0;
     descriptor->type_attr = 0xEE;   // Set Gate, Storage, RING & IRQ Number

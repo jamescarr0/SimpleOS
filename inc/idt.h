@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-typedef struct interrupt_descriptor32_s
+typedef struct
 {
     uint16_t offset_1;          // Offset bits 0...15
     uint16_t selector;          // Code segment selector in GDT
@@ -22,16 +22,16 @@ typedef struct interrupt_descriptor32_s
                                 // 2 bit Descriptor Privilege Level
                                 // Present (IRQ No.) Set to Zero for Unused IRQ.
     uint16_t offset_2;          // Offset 16...31
-} __attribute__((packed)) idt32desc_t;
+} __attribute__((packed)) idt_entry_t;
 
-typedef struct interrupt_descriptor32_reg_s
+typedef struct
 {
     uint16_t size;
     uint32_t offset;
-} __attribute__((packed)) idt32desc_reg_t;
+} __attribute__((packed)) idtr_t;
 
 
-extern void idt_load(idt32desc_reg_t *ptr);
+extern void idt_load(idtr_t *ptr);
 
 void idt_init();
 

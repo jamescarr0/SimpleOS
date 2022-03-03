@@ -9,8 +9,6 @@
 #include "stdio.h"
 #include "idt.h"
 
-extern void irq0_test();
-
 void main() {
 
     clear();
