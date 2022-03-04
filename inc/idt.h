@@ -12,6 +12,10 @@
 
 #include <stdint.h>
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct
 {
     uint16_t offset_1;          // Offset bits 0...15
@@ -24,17 +28,38 @@ typedef struct
     uint16_t offset_2;          // Offset 16...31
 } __attribute__((packed)) idt_entry_t;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct
 {
     uint16_t size;
     uint32_t offset;
 } __attribute__((packed)) idtr_t;
 
+/**
+ * @brief 
+ * 
+ * @param pIDTR 
+ */
+static inline void lidt(idtr_t const *const pIDTR)
+{  
+    asm ( "lidt %0" : : "m"(*pIDTR) );
+}
 
-extern void idt_load(idtr_t *ptr);
-
+/**
+ * @brief 
+ * 
+ */
 void idt_init();
 
-void idt_set(const int IRQ_number, const void *const address);
+/**
+ * @brief 
+ * 
+ * @param interrupt_number 
+ * @param address 
+ */
+void idt_set(const int interrupt_number, const void *const address);
 
 #endif // SIMPLEOS_IDT_H

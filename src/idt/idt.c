@@ -37,15 +37,15 @@ void idt_init() {
     idtr_desc.size = sizeof(idt32desc_table) - 1;
     idtr_desc.offset = (uint32_t) idt32desc_table;
 
-    idt_set(0, isr_zero);   // Interrupt 0 - Divide by zero 
+    idt_set(0, isr_zero);   // Interrupt 0 - Divide by zero error
 
-    // Load idt table - idt.asm
-    idt_load(&idtr_desc);
+    // Load idt table
+    lidt(&idtr_desc);
 }
 
 // Create Interrupt Service Routines
-void idt_set(const int IRQ_number, const void *const address) {
-    idt_entry_t *descriptor = &idt32desc_table[IRQ_number];
+void idt_set(const int interrupt_number, const void *const address) {
+    idt_entry_t *descriptor = &idt32desc_table[interrupt_number];
 
     descriptor->offset_1 = (uint32_t) address;
     descriptor->selector = KERNEL_CODE_SELECTOR;
