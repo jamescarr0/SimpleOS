@@ -20,6 +20,9 @@
 ;   
 ; https://c9x.me/x86/html/file_module_x86_id_139.html
 
+; !! ROUTINES NOT CURRENTLY IN USE, ABSTRACTED IN C !!
+; Functions can be found in io.c & io.h
+
 section .asm
 
 global io_read_byte
@@ -61,8 +64,8 @@ io_write_byte:
     push ebp
     mov ebp, esp
 
-    mov eax, [ebp+12]
-    mov edx, [ebp+8]
+    mov eax, [ebp+12]       ; Data
+    mov edx, [ebp+8]        ; Port
     out dx, al
 
     pop ebp
@@ -72,8 +75,8 @@ io_write_word:
     push ebp
     mov ebp, esp
 
-    mov eax, [ebp+12]
-    mov edx, [ebp+8]
+    mov eax, [ebp+12]       ; Data
+    mov edx, [ebp+8]        ; Port
     out dx, ax
 
     pop ebp
