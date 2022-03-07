@@ -18,8 +18,5 @@ void main() {
 
     // Initiliase the IDT
     idt_init();
-
-    io_write_byte(0x60, 0xAB);  // Dummy code to test write_byte driver.
-
-    // int a = 10*2/0; // Dummy code to test IDT & ISR0. Division by zero.
+    
 }

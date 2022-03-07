@@ -22,6 +22,8 @@
 
 #include <stdint.h>
 
+void _PIC_remap(int offset1, int offset2);
+
 /******************** ASM Funcs begin ********************
  *
  * Working as should.  Replaced with C inline functions/assembly.
@@ -124,6 +126,15 @@ static inline uint32_t insl(uint16_t port)
                      : "=a"(ret)
                      : "Nd"(port));
     return ret;
+}
+
+/**
+ * @brief Wait a very small amount of time (1 to 4 microseconds, generally). 
+ * 
+ */
+static inline void io_wait(void)
+{
+    outb(0x80, 0);
 }
 
 #endif

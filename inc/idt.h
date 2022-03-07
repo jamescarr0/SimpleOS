@@ -69,7 +69,6 @@ typedef struct
     uint32_t offset;
 } __attribute__((packed)) idtr_t;
 
-
 /**
  * @brief Load the interrupt descriptor table in the IDT register (IDTR)
  *

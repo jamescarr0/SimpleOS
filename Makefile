@@ -9,8 +9,8 @@ FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
-		./build/memory/memory.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o \
-		./build/io/io.asm.o ./build/io/io.o
+		./build/memory/memory.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o ./build/idt/pic.o \
+		./build/io/io.asm.o ./build/io/io.o 
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -55,6 +55,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 ./build/idt/interrupts.o: ./src/idt/interrupts/interrupts.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/interrupts/interrupts.c -o ./build/idt/interrupts.o
+
+./build/idt/pic.o: ./src/idt/PIC/pic.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/PIC/pic.c -o ./build/idt/pic.o
 
 ./build/io/io.asm.o: ./src/io/io.asm
 	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
