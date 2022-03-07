@@ -48,7 +48,7 @@
  * @param port The I/O port to write a byte to.
  * @param val The value (byte) to be sent to the I/O port.
  */
-static inline void io_write_byte(uint16_t port, uint8_t val)
+static inline void outb(uint16_t port, uint8_t val)
 {
     __asm__ volatile("out %0, %1"
                      :
@@ -61,7 +61,7 @@ static inline void io_write_byte(uint16_t port, uint8_t val)
  * @param port The I/O port to write a word to.
  * @param val The value (word) to be sent to the I/O port.
  */
-static inline void io_write_word(uint16_t port, uint16_t val)
+static inline void outw(uint16_t port, uint16_t val)
 {
     __asm__ volatile("out %0, %1"
                      :
@@ -74,7 +74,7 @@ static inline void io_write_word(uint16_t port, uint16_t val)
  * @param val The long value (32-bit) to be sent to the I/O port.
  * @param port The I/O port to write a long value to.
  */
-static inline void io_write_long(uint16_t port, uint32_t val)
+static inline void outl(uint16_t port, uint32_t val)
 {
     __asm__ volatile("out %0, %1"
                      :
@@ -87,7 +87,7 @@ static inline void io_write_long(uint16_t port, uint32_t val)
  * @param port The I/O port to read a byte from.
  * @return uint8_t - A byte from the I/O port.
  */
-static inline uint8_t io_read_byte(uint16_t port)
+static inline uint8_t insb(uint16_t port)
 {
     uint8_t ret;
     __asm__ volatile("inb %1, %0"
@@ -102,7 +102,7 @@ static inline uint8_t io_read_byte(uint16_t port)
  * @param port The I/O port to read a word from/
  * @return uint16_t - A word from the I/O port.
  */
-static inline uint16_t io_read_word(uint16_t port)
+static inline uint16_t insw(uint16_t port)
 {
     uint16_t ret;
     __asm__ volatile("inw %1, %0"
@@ -117,7 +117,7 @@ static inline uint16_t io_read_word(uint16_t port)
  * @param port The I/O port to read a long word from.
  * @return uint32_t - A long (32-bit) word from the I/O port.
  */
-static inline uint32_t io_read_long(uint16_t port)
+static inline uint32_t insl(uint16_t port)
 {
     uint32_t ret;
     __asm__ volatile("inl %1, %0"

@@ -25,13 +25,13 @@
 
 section .asm
 
-global io_read_byte
-global io_read_word
+global insb
+global insw
 
-global io_write_byte
-global io_write_word
+global outb
+global outw
 
-io_read_byte:
+insb:
     push ebp
     mov ebp, esp
 
@@ -41,7 +41,7 @@ io_read_byte:
     pop ebp
     ret
 
-io_read_word:
+insw:
     push ebp
     mov ebp, esp
 
@@ -60,7 +60,7 @@ io_read_word:
 ;
 ; https://c9x.me/x86/html/file_module_x86_id_222.html
 
-io_write_byte:
+outb:
     push ebp
     mov ebp, esp
 
@@ -71,7 +71,7 @@ io_write_byte:
     pop ebp
     ret
 
-io_write_word:
+outw:
     push ebp
     mov ebp, esp
 
