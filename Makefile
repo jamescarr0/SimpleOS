@@ -17,6 +17,8 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 
+	./build_size_check.sh ./bin/os.bin
+
 	# Pad out to 100 sectors.  Allows for a 51kb kernel (room for expansion)
 	# So we dont have to keep calculating kernel size as its being built.
 	# 100 Sectors will be loaded into memory from the bootloader.

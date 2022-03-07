@@ -1,9 +1,11 @@
 /**
- * @file Implements standard input and output streams.
- * @date 23/02/2022
- * **Author:** James Carr
- * ## Role
- * To establish functions providing input and output capabilities.
+ * @file stdio.c
+ * @author James Carr
+ * @brief Function definitions for standard input output.
+ * @version 0.1
+ * @date 2022-23-02
+ *
+ * Definitions for standard input ouput.
  */
 
 #include <stdint.h>
@@ -13,68 +15,58 @@
 #define VGA_HEIGHT 25
 #define FONT_COLOR 15
 
-static volatile uint16_t *video_memory = (volatile uint16_t *) 0xB8000;
+int terminal_col = 0; // Terminal columns
+int terminal_row = 0; // Terminal row
 
-int terminal_col = 0;
-int terminal_row = 0;
+static volatile uint16_t *video_memory = (volatile uint16_t *)0xB8000; // Text video memory.
 
-/**
- * Text video_memory mode memory requires two bytes for every character on
- * the screen.
- *
- * @param character ASCII character
- * @param color Color code to set foreground color of ASCII character
- * @return 16-bit (two-byte) value that can be sent to video memory.
+/* Text video memory requires two bytes per character.  An ASCII byte, and an attribute
+byte, which is the colour of the character to be sent to video memory.
+X86 is little endian so the bytes need to be converted (reversed) accordingly with
+a bitshift left and biwide or
  */
-static uint16_t create_video_char(const char character, const int color) {
-    return (color << 8) | character;
+static uint16_t create_video_char(const char character, const int color)
+{
+    return (color << 8) | character; // Convert to little endianess. Swap bytes.
 }
 
-
-/**
- * Sends the unit16_t (two byte character/color combination) directly to video
- * memory.
- *
- * @param x X position of the character to be displayed on stdout
- * @param y Y position of the character to be displayed on stdout
- * @param character The ASCII character to display
- * @param color The foreground color of the ASCII character
- */
-static void send_to_video_memory(const int x, const int y, const char character, const int color) {
+/* Inserts the 'two byte' text video character into video memory at location x, y */
+static void send_to_video_memory(const int x, const int y, const char character, const int color)
+{
     video_memory[(y * VGA_WIDTH) + x] = create_video_char(character, color);
 }
 
-
-/**
- * Responsible for tracking the characters being sent to video memory and to identify
- * escape sequences in the string such as newline.
- *
- * @param character
- * @param color
- */
-static void putchar(const char character, const int color) {
-    if(character == '\n') {
+/* Update the terminal cursor position and send the character to be inserted into video memory to the
+video memory helper function 'send_to_video_memory' */
+static void putchar(const char character, const int color)
+{
+    if (character == '\n') // Increment the terminal row position when reading a newline.
+    {
         terminal_row++;
         terminal_col = 0;
         return;
     }
 
+    // Send the char to video memory.
     send_to_video_memory(terminal_col, terminal_row, character, color);
     terminal_col++;
 
-    if (terminal_col >= VGA_WIDTH) {
+    // Wrap text to a newline when the end of the terminal is reached.
+    if (terminal_col >= VGA_WIDTH)
+    {
         terminal_row++;
         terminal_col = 0;
     }
 }
 
-
-/**
- * Clear the terminal and reset the terminal cursor x and y position to 0, 0.
+/* Clears the terminal screen by iterating the video memory vector and inserting
+ * white space
  */
-void clear(void) {
-    video_memory = (volatile uint16_t *) 0xB8000;
-    for (int y = 0; y < VGA_HEIGHT; ++y) {
+void clear(void)
+{
+    video_memory = (volatile uint16_t *)0xB8000;
+    for (int y = 0; y < VGA_HEIGHT; ++y)
+    {
         for (int x = 0; x < VGA_WIDTH; ++x)
             send_to_video_memory(x, y, ' ', 0);
     }
@@ -82,14 +74,11 @@ void clear(void) {
     terminal_row = 0;
 }
 
-
-/**
- * Write a NULL terminated string to standard output.
- *
- * @param str NULL terminated string to send to stdout.
- */
-void printf(const char *const str) {
-    for (size_t i = 0; i < strlen(str); ++i) {
+/* C Style printf function for printing characters to the terminal */
+void printf(const char *const str)
+{
+    for (size_t i = 0; i < strlen(str); ++i)
+    {
         putchar(str[i], FONT_COLOR);
     }
 }

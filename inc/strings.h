@@ -1,19 +1,25 @@
 /**
- * @file Kernel header for string function prototypes.
- * @date 23/02/2022
- * **Author:** James Carr
- * ## Role.
- * Provides function prototypes for working with strings.
+ * @file strings.h
+ * @author James Carr
+ * @brief String function declerations.
+ * @version 0.1
+ * @date 2022-02-23
+ * 
+ * String related functions used by the kernel.
+ * 
  */
+
 #include <stddef.h>
 
 #ifndef SIMPLEOS_STRINGS_H
 #define SIMPLEOS_STRINGS_H
 
-size_t strlen(const char *str);
-/* Returns the length of a NULL terminated string.
- * Parameters:
- * char *str: A string.
+/**
+ * @brief Return the length of a NULL terminal
+ * 
+ * @param str NULL terminated string 
+ * @return size_t - Length of a null terminated string (decimal)
  */
+size_t strlen(const char *str);
 
 #endif //SIMPLEOS_STRINGS_H
