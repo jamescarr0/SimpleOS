@@ -1,7 +1,7 @@
 /**
  * @file kernel.c
  * @author James Carr
- * @brief Kernel entry, C main() function called from kernerl.asm.
+ * @brief Kernel entry, main() called from kernel.asm
  * @version 0.1
  * @date 19/02/2002
  */
