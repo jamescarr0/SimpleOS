@@ -9,7 +9,7 @@ FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
-		./build/memory/memory.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o ./build/idt/pic.o \
+		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o ./build/idt/pic.o \
 		./build/io/io.asm.o ./build/io/io.o 
 
 all: ./bin/boot.bin ./bin/kernel.bin
@@ -47,6 +47,11 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/memory/memory.o: ./src/memory/memory.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
 
+./build/memory/heap.o: ./src/memory/heap.c
+./build/memory/kheap.o: ./src/memory/kheap.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap.c -o ./build/memory/heap.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/kheap.c -o ./build/memory/kheap.o
+
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
 	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
 
@@ -69,10 +74,10 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	make all
 
 run: all
-	qemu-system-x86_64 -hda ./bin/os.bin
+	qemu-system-i386 -hda ./bin/os.bin
 
 debug: ./bin/os.bin
-	gdb-multiarch -ex "target remote | qemu-system-x86_64 -hda ./bin/os.bin -S -gdb stdio" \
+	gdb-multiarch -ex "target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio" \
 		-ex "add-symbol-file ./build/kernelfull.o 0x100000"
 clean:
 	rm -rf ./bin/*.bin

@@ -9,14 +9,17 @@
 #include "stdio.h"
 #include "idt.h"
 #include "io.h"
+#include "kheap.h"
 
 void main() {
 
     clear();
     printf("Welcome to SimpleOS.\n");
-    printf("The simple operating system that currently does nothing :-)\n");
 
-    // Initiliase the IDT
+    // Initiliase the IDT.
     idt_init();
+
+    // Initialise the heap.
+    kheap_init();
     
 }
