@@ -60,8 +60,6 @@ void idt_init()
 
     // Load idt table
     lidt(&idtr_desc);
-
-    asm("sti"); // Enable interrupts.
 }
 
 // Create Interrupt Service Routines

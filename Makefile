@@ -5,7 +5,7 @@ INCLUDES = -Iinc
 
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels
 FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
-FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99
+FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99 -m32
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
@@ -33,9 +33,8 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
 
 ./build/kernel.asm.o: src/kernel/kernel.asm
-	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel.asm.o
-
 ./build/kernel.o : src/kernel/kernel.c
+	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel.asm.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/kernel/kernel.c -o ./build/kernel.o
 
 ./build/stdio.o : src/stdio/stdio.c
@@ -45,29 +44,24 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/strings/strings.c -o ./build/strings.o
 
 ./build/memory/memory.o: ./src/memory/memory.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
-
 ./build/memory/heap.o: ./src/memory/heap.c
 ./build/memory/kheap.o: ./src/memory/kheap.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap.c -o ./build/memory/heap.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/kheap.c -o ./build/memory/kheap.o
 
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
-	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
-
 ./build/idt/idt.o: ./src/idt/idt.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/idt.c -o ./build/idt/idt.o
-
+./build/idt/pic.o: ./src/idt/PIC/pic.c
 ./build/idt/interrupts.o: ./src/idt/interrupts/interrupts.c
+	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/idt.c -o ./build/idt/idt.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/PIC/pic.c -o ./build/idt/pic.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/interrupts/interrupts.c -o ./build/idt/interrupts.o
 
-./build/idt/pic.o: ./src/idt/PIC/pic.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/PIC/pic.c -o ./build/idt/pic.o
-
 ./build/io/io.asm.o: ./src/io/io.asm
-	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
-
 ./build/io/io.o: ./src/io/io.c
+	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/io/io.c -o ./build/io/io.o
 
 ./bin/os.bin:

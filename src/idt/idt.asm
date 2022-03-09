@@ -5,6 +5,16 @@ global no_interrupt
 
 extern int_handler_21
 extern no_interrupt_handler
+extern enable_interrupts
+extern disable_interrupts
+
+enable_interrupts:          ; Enable inetrrupts 
+    sti                     ; Can be called from C Code.
+    ret
+
+disable_interrupts:         ; Same as above
+    cli
+    ret
 
 idt_load:
     push ebp

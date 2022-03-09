@@ -10,16 +10,20 @@
 #include "idt.h"
 #include "io.h"
 #include "kheap.h"
+#include "interrupts.h"
 
 void main() {
 
     clear();
     printf("Welcome to SimpleOS.\n");
 
+    // Initialise the heap.
+    kheap_init();
+
     // Initiliase the IDT.
     idt_init();
 
-    // Initialise the heap.
-    kheap_init();
+    // Enable interrupts.
+    enable_interrupts();
     
 }
