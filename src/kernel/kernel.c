@@ -20,7 +20,7 @@ void main() {
     // Initialise the heap.
     kheap_init();
 
-    // Initiliase the IDT.
+    // Initialiase the IDT.
     idt_init();
 
     // Enable interrupts.

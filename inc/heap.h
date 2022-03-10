@@ -1,11 +1,48 @@
 /**
  * @file heap.h
  * @author James Carr
- * @brief Create and manage heap memory
+ * @brief Declearations for creating and managing heap memory.
  * @version 0.1
  * @date 2022-03-08
  *
- *
+ * Heap Implementatoin: Consists of a entry table (an array) which describes memory blocks free
+ * and memory blocks taken.  The table has a pointer to a 'data pool', which is the region of memory space
+ * allocated for our heap.  The heap is block based.  Each memory address returned will be aligned to 
+ * 4096 therefore, the minimum size returned will always be at least 4096 bytes.   I.e, if 50 bytes are
+ * requested, 4096 will be returned.  Similalry, if 6000 bytes are requested, 8192 (4096*2) will returned.
+ * 
+ * The Entry Table:
+ * Is an array of 1 byte entries that represent an entry in the heap.  The array (table size) is calculated
+ * by taking the total heap size (100Mb) and dividing it by the block size (4096 bytes).  This equals the 
+ * total number of entries needed in the array.
+ * 
+ * Eg, 104857600 (100Mb stack) / 4096 (block size) = 25600 entries
+ * 
+ * Table will be located at 0x00007E00 and ends at 0x0007FFFF.  Small area of free memory (refer to intel documentation)
+ * This provides  480.5 KiB of usable memory only, our table entry is 25.6kb so this is plenty to hold our heap table.
+ * 
+ * If the heap is located at 0x01000000:
+ * entry zero   = 0x01000000
+ * entry one    = 0x01001000
+ * entry two    = 0x01002000
+ * ...
+ * entry n - 1  = 0x073FE000
+ * entry n      = 0x073FF000
+ * 
+ * 
+ * Table Entry:
+ * Each byte repesents 4096 bytes in the data pool (heap).
+ * Upper 4 bits are allocation flags.
+ * Lower 4 bits repesent the entry type
+ * 
+ *          7                                                                       0
+ *          +-----------------------------------------------------------------------+
+ *  Bit 7   | Has Next | Is_First | Not Used | Not Used | ET 3 | ET 2 | ET 1 | ET 0 | Bit 0
+ *          +-----------------------------------------------------------------------+
+ * 
+ * Has Next = Set (1) if the next block is part of the allocation
+ * Is First = Set (1) if this is the first entry of the allocation
+ * 
  */
 
 #ifndef SIMPLEOS_HEAP_H
@@ -63,19 +100,19 @@ typedef struct
 int heap_create(heap_t *heap, void *heap_start_addr, void *heap_end_addr, heap_table_t *table);
 
 /**
- * @brief 
- * 
- * @param heap 
- * @param ptr 
+ * @brief
+ *
+ * @param heap The data pool (memory range) from which to deallocate memory.
+ * @param ptr Pointer to memory space to deallocate.
  */
 void heap_free(heap_t *heap, void *ptr);
 
 /**
- * @brief 
- * 
- * @param heap 
- * @param size 
- * @return void* 
+ * @brief
+ *
+ * @param heap The data pool (memory range) from which to allocate memory.
+ * @param size The size in bytes of memory to allocate.
+ * @return void* Pointer to the allocated memory.
  */
 void *heap_malloc(heap_t *heap, size_t size);
 

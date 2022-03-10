@@ -16,7 +16,7 @@
 static void heap_mark_blocks_taken(heap_t *heap, int start_block, uint32_t total_blocks)
 {
     uint32_t end_block = (start_block + total_blocks) - 1;
-    HBT_ENTRY_t entry = HEAP_BLOCK_TABLE_ENTRY_FREE | HEAP_BLOCK_IS_FIRST;
+    HBT_ENTRY_t entry = HEAP_BLOCK_TABLE_ENTRY_FREE | HEAP_BLOCK_IS_FIRST; // Mark the block as the first entry.
     if (total_blocks > 1)
     {
         entry |= HEAP_BLOCK_HAS_NEXT;
@@ -27,16 +27,18 @@ static void heap_mark_blocks_taken(heap_t *heap, int start_block, uint32_t total
         heap->heap_table->entries[i] = entry;
         entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN;
         if(i != end_block - 1)
-        {
-            entry |= HEAP_BLOCK_HAS_NEXT;
+        {   
+            // Mark block as having another block.
+            // i.e the memory space is spread over consecutive blocks.
+            entry |= HEAP_BLOCK_HAS_NEXT; 
         }
     }
-    
 }
 
+// Check if the block has been allocated.
 static int heap_get_entry_type(HBT_ENTRY_t entry)
-{
-    return entry & 0x0f;
+{   
+    return entry & 0x0f; // 0x00=Free Block, 0x01=Taken Block
 }
 
 // Find consecutive blocks of memory to allocate.
@@ -46,6 +48,7 @@ static int heap_get_start_block(heap_t *heap, uint32_t total_blocks)
     int current_block = 0;
     int starting_block = -1;
 
+    // Iterate each entry looking for consecutive free blocks of memory.
     for (size_t i = 0; i < heap_table->total_entries; i++)
     {
         if (heap_get_entry_type(heap_table->entries[i] != HEAP_BLOCK_TABLE_ENTRY_FREE))
@@ -79,7 +82,8 @@ static int heap_get_start_block(heap_t *heap, uint32_t total_blocks)
 
 static void *heap_block_to_address(heap_t *heap, uint32_t block)
 {
-    // Add OFFSET to start address and return ABSOLUTE memory address. 
+    // Calculate an aboslute memory address based off the heap starting address and
+    // number of blocks to allocate.
     return heap->start_address + (block * KERNEL_HEAP_BLOCK_SIZE);
 }
 
@@ -189,14 +193,19 @@ int heap_create(heap_t *heap, void *heap_start_addr, void *heap_end_addr, heap_t
     return res;
 }
 
+// Free the previously allocated memory
 void heap_free(heap_t *heap, void *ptr)
 {
     heap_mark_blocks_free(heap, heap_address_to_block(heap, ptr));
 }
 
 void *heap_malloc(heap_t *heap, size_t size)
-{
-    size_t aligned_size = heap_align_value_to_upper(size);
+{   
+    // Get an aligned memory size
+    size_t aligned_size = heap_align_value_to_upper(size); 
+
+    // Set the number of blocks to allocate.  Minimum size is 4096.
     uint32_t total_blocks = aligned_size / KERNEL_HEAP_BLOCK_SIZE;
+
     return heap_malloc_blocks(heap, total_blocks);
 }

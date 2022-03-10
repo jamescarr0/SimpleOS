@@ -33,6 +33,8 @@ idtr_t idtr_desc; //  Interrupt descriptor table register instance.
 // Create and initilaise the IDT and IDTR
 void idt_init()
 {
+    disable_interrupts();
+    
     _PIC_remap(PIC1, PIC2); // Remap the PIC to avoid conflicts.
 
     // Clear memory and initiliase array (IDT vector) with zeros.

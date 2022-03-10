@@ -19,10 +19,11 @@ heap_table_t kernel_heap_table;
 void kheap_init()
 {
     // Total Number of block entries the heap will manage. 
+    // Eg.. 104857600 (100Mb stack) / 4096 (block size) = 25600 bytes
     int total_table_entries = KERNEL_HEAP_SIZE_BYTES / KERNEL_HEAP_BLOCK_SIZE;
 
-    // Initialise the heap table with a starting heap address and
-    // the total number of entries the table will manage.
+    // Store the heap table at the specified memory address
+    // Our entries are 25600 with a 100mb stack so this memory space must be large enough to accomodate the table.
     kernel_heap_table.entries = (HBT_ENTRY_t *)KERNEL_HEAP_TABLE_ADDRESS;
     kernel_heap_table.total_entries = total_table_entries;
 
