@@ -11,6 +11,7 @@
 #include "kheap.h"
 #include "heap.h"
 #include "stdio.h"
+#include "memory.h"
 
 heap_t kernel_heap;
 heap_table_t kernel_heap_table;
@@ -41,6 +42,16 @@ void kheap_init()
 void *kmalloc(size_t size)
 {
     return heap_malloc(&kernel_heap, size);
+}
+
+// Malloc and memset.  Allocate memory and set to zero.
+void *kzalloc(size_t size)
+{
+    void *p = kmalloc(size);
+    if(!p) return NULL;
+
+    memset(p, 0x00, size);
+    return p;
 }
 
 // Free previously allocated kernel memory.

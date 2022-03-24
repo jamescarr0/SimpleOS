@@ -32,6 +32,14 @@ void kheap_init();
 void *kmalloc(size_t size);
 
 /**
+ * @brief Allocate memory and set memory to zero
+ *
+ * @param size
+ * @return void *pointer to allocated memory which has been set to 0.
+ */
+void *kzalloc(size_t size);
+
+/**
  * @brief Deallocates memory space allocated by kmalloc.
  * 
  * @param ptr pointer to memory to deallocate.
