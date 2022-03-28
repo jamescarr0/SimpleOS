@@ -5,8 +5,10 @@
 #include "paging.h"
 #include "kheap.h"
 
+static uint32_t *current_dir = NULL;
+
 // Create & initialise paging directory.
-Paging_4GB_chunk *new_4gb_chunk(uint8_t flags)
+PagingDir_4gb *init_4gb_page_dir(uint8_t flags)
 {
     uint32_t *dir = kzalloc(sizeof (uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
 
@@ -25,9 +27,19 @@ Paging_4GB_chunk *new_4gb_chunk(uint8_t flags)
         dir[i] = (uint32_t) entry | flags | PAGING_IS_WRITEABLE;
     }
 
-    Paging_4GB_chunk *chunk = kzalloc(sizeof (Paging_4GB_chunk));
-    chunk->dir_entry = dir;
+    PagingDir_4gb *chunk = kzalloc(sizeof (PagingDir_4gb));
+    chunk->directory = dir;
+
     return chunk;
 }
 
-// TODO: Implement paging functions & test.
+void paging_switch(uint32_t *directory)
+{
+    paging_load_dir(directory);
+    current_dir = directory;
+}
+
+uint32_t *paging_get_dir(PagingDir_4gb *page_dir)
+{
+    return page_dir->directory;
+}

@@ -33,7 +33,7 @@ idt_load:
 int21_wrapper:
     cli                     ; Disable interrupts
     pushad                  ; Save reg state
-    cld                     ; C code following the sysV ABI requires DF to be clear on function entry
+    cld                     ; C code following the sysV ABI requires DF to be clear on function directory
     
     call int_handler_21     ; Call ISR handler.
     
@@ -44,7 +44,7 @@ int21_wrapper:
 no_interrupt:
     cli                     ; Disable interrupts
     pushad                  ; Save reg state
-    cld                     ; C code following the sysV ABI requires DF to be clear on function entry
+    cld                     ; C code following the sysV ABI requires DF to be clear on function directory
     
     call no_interrupt_handler     ; NO ISR assigned, call the no int handler.
     

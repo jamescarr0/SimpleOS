@@ -16,7 +16,7 @@
 static void heap_mark_blocks_taken(heap_t *heap, int start_block, uint32_t total_blocks)
 {
     uint32_t end_block = (start_block + total_blocks) - 1;
-    HBT_ENTRY_t entry = HEAP_BLOCK_TABLE_ENTRY_FREE | HEAP_BLOCK_IS_FIRST; // Mark the block as the first entry.
+    HBT_ENTRY_t entry = HEAP_BLOCK_TABLE_ENTRY_FREE | HEAP_BLOCK_IS_FIRST; // Mark the block as the first directory.
     if (total_blocks > 1)
     {
         entry |= HEAP_BLOCK_HAS_NEXT;
@@ -48,7 +48,7 @@ static int heap_get_start_block(heap_t *heap, uint32_t total_blocks)
     int current_block = 0;
     int starting_block = -1;
 
-    // Iterate each entry looking for consecutive free blocks of memory.
+    // Iterate each directory looking for consecutive free blocks of memory.
     for (size_t i = 0; i < heap_table->total_entries; i++)
     {
         if (heap_get_entry_type(heap_table->entries[i] != HEAP_BLOCK_TABLE_ENTRY_FREE))
@@ -186,7 +186,7 @@ int heap_create(heap_t *heap, void *heap_start_addr, void *heap_end_addr, heap_t
 
     size_t table_size = sizeof(HBT_ENTRY_t) * table->total_entries;
 
-    // Init all blocks in heap entry table to zero so the entire heap can be
+    // Init all blocks in heap directory table to zero so the entire heap can be
     // allocated.
     memset(table->entries, HEAP_BLOCK_TABLE_ENTRY_FREE, table_size);
 

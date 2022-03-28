@@ -20,10 +20,10 @@
 #define UNUSED 0x0
 
 /**
- * @brief IDT Descriptor entry
+ * @brief IDT Descriptor directory
  *
- * Each entry has a complex structure.
- * Offset: A 32-bit value, split in two parts. It represents the address of the entry point of the Interrupt Service Routine.
+ * Each directory has a complex structure.
+ * Offset: A 32-bit value, split in two parts. It represents the address of the directory point of the Interrupt Service Routine.
  * Selector: A Segment Selector with multiple fields which must point to a valid code segment in your GDT.
  * Gate Type: A 4-bit value which defines the type of gate this Interrupt Descriptor represents. There are five valid type values:
  * 0b0101 or 0x5: Task Gate, note that in this case, the Offset value is unused and should be set to zero.
@@ -56,8 +56,8 @@ typedef struct
  * Offset: The linear address of the Interrupt Descriptor Table (not the physical address, paging applies).
  * Note that the amount of data loaded by LIDT differs in 32-bit and 64-bit modes, Offset is 4 bytes long in 32-bit mode and 8 bytes long in 64-bit mode.
  * This is similar to the GDT, except:
- * The first entry (at zero offset) is used in the IDT.
- * There are 256 interrupt vectors (0..255), so the IDT should have 256 entries, each entry corresponding to a specific interrupt vector.
+ * The first directory (at zero offset) is used in the IDT.
+ * There are 256 interrupt vectors (0..255), so the IDT should have 256 entries, each directory corresponding to a specific interrupt vector.
  * Although the IDT can contain more than 256 entries, they are ignored.
  * Although the IDT can contain less than 256 entries, any entries that are not present (due to this or other reasons) will generate a
  * General Protection Fault when an attempt to access them is made. Ideally the IDT should contain enough entries so that this fault

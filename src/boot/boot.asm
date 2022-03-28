@@ -64,7 +64,7 @@ enable_protected_mode:      ; Enable and switch to 32 Bit Protected Mode.
 ; |GDTR Offset + 24	| Entry 3 | -> NO ENTRY
 ; +---------------------------+
 ;
-; The first entry in the GDT (Entry 0) should always be null and subsequent
+; The first directory in the GDT (Entry 0) should always be null and subsequent
 ; entries should be used instead.
 
 gdt_start:  ; GDT Table Start Address

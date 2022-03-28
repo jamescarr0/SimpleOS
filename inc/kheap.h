@@ -7,7 +7,7 @@
  * 
  * 
  * Provides prototypes for kernel memory allocation and deallocation of 
- * entry based heap memory.
+ * directory based heap memory.
  */
 
 #ifndef SIMPLEOS_KHEAP_H

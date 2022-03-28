@@ -29,9 +29,9 @@
  * PAGING_ACCESS_FROM_ALL : Bit 2
  * U/S, the 'User/Supervisor' bit, controls access to the page based on privilege level. If the bit is set, then the
  * page may be accessed by all; if the bit is not set, however, only the supervisor can access it. For a page directory
- * entry, the user bit controls access to all the pages referenced by the page directory entry. Therefore, if you wish
- * to make a page a user page, you must set the user bit in the relevant page directory entry as well as the page table
- * entry.
+ * directory, the user bit controls access to all the pages referenced by the page directory directory. Therefore, if you wish
+ * to make a page a user page, you must set the user bit in the relevant page directory directory as well as the page table
+ * directory.
  */
 
 #define PAGING_ACCESS_FROM_ALL  0b00000100
@@ -60,8 +60,19 @@
 #define PAGING_TOTAL_ENTRIES_PER_TABLE 1024
 #define PAGING_PAGE_SIZE 4096
 
+
 typedef struct {
-    uint32_t *dir_entry;
-} Paging_4GB_chunk;
+    uint32_t *directory;
+} PagingDir_4gb;
+
+extern void paging_load_dir(uint32_t *);   // asm function
+
+extern void enable_paging(); // asm function.
+
+PagingDir_4gb *init_4gb_page_dir(uint8_t);
+
+uint32_t *paging_get_dir(PagingDir_4gb *);
+
+void paging_switch(uint32_t *directory);
 
 #endif //SIMPLEOS_PAGING_H
