@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2022-03-08
  *
- *
+ * Kernel space only. Memory allocation functions.
  */
 
 #include "kheap.h"

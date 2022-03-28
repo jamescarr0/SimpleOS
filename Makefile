@@ -10,7 +10,7 @@ FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
 		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o ./build/idt/pic.o \
-		./build/io/io.asm.o ./build/io/io.o 
+		./build/io/io.asm.o ./build/io/io.o ./build/memory/paging.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -44,11 +44,13 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/strings/strings.c -o ./build/strings.o
 
 ./build/memory/memory.o: ./src/memory/memory.c
-./build/memory/heap.o: ./src/memory/heap.c
-./build/memory/kheap.o: ./src/memory/kheap.c
+./build/memory/heap.o: ./src/memory/heap/heap.c
+./build/memory/kheap.o: ./src/memory/heap/kheap.c
+./build/memory/paging.o: ./src/memory/paging/paging.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap.c -o ./build/memory/heap.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/kheap.c -o ./build/memory/kheap.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap/heap.c -o ./build/memory/heap.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap/kheap.c -o ./build/memory/kheap.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/paging/paging.c -o ./build/memory/paging.o
 
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
 ./build/idt/idt.o: ./src/idt/idt.c

@@ -22,7 +22,7 @@
 void kheap_init();
 
 /**
- * @brief Kernel Malloc
+ * @brief Kernel space Malloc
  * 
  * @param size Number of bytes to allocate.
  * @return void* pointer to the beginning of newly allocated memory.
@@ -32,7 +32,7 @@ void kheap_init();
 void *kmalloc(size_t size);
 
 /**
- * @brief Allocate memory and set memory to zero
+ * @brief Kernel space: Allocate memory and set memory to zero
  *
  * @param size
  * @return void *pointer to allocated memory which has been set to 0.
@@ -40,7 +40,7 @@ void *kmalloc(size_t size);
 void *kzalloc(size_t size);
 
 /**
- * @brief Deallocates memory space allocated by kmalloc.
+ * @brief Kernel space: Deallocates memory space allocated by kmalloc.
  * 
  * @param ptr pointer to memory to deallocate.
  */
