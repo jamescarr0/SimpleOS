@@ -13,7 +13,7 @@ SimpleOS is a 32-bit operating system for X86.
 
 ### Current status:
 
-:heavy_check_mark: Real mode 16 bit bootloader
+:white_check_mark: Real mode 16 bit bootloader
 
 :heavy_check_mark: Switch to 32 bit protected mode.
 
