@@ -43,8 +43,9 @@ ISR_ZERO: Divide by zero error. Int 21 - Keyboard interrupt and triggers on key 
 #### Heap
 
 Table based entry method to track the allocation/de-allocation of memory. OSDev has this as the worst performing method,
-however it is the easiest and less complex method to implement.  (less complex != my idea of less complex :joy: :
-sweat_smile:)
+however it is the easiest and less complex method to implement.  
+
+less complex != my idea of less complex :joy: :sweat_smile:
 
 Kmalloc currently returns a minimum size of 4096 bytes regardless. kmalloc(n) where n < 4096 will always allocate 4096
 bytes at a minimum. If n = 4097, then 8219 bytes will be allocated and so on. Allocation is based on 4096 blocks.
