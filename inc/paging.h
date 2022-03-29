@@ -5,6 +5,7 @@
 #ifndef SIMPLEOS_PAGING_H
 #define SIMPLEOS_PAGING_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -74,5 +75,7 @@ PagingDir_4gb *init_4gb_page_dir(uint8_t);
 uint32_t *paging_get_dir(PagingDir_4gb *);
 
 void paging_switch(uint32_t *directory);
+
+int paging_set(uint32_t *dir, void *v_addr, uint32_t ptr);
 
 #endif //SIMPLEOS_PAGING_H

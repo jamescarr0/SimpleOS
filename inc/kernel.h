@@ -9,6 +9,6 @@
 #ifndef SIMPLEOS_KERNEL_H
 #define SIMPLEOS_KERNEL_H
 
-void main();
+int main();
 
 #endif //SIMPLEOS_KERNEL_H

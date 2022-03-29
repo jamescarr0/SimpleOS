@@ -13,7 +13,7 @@
 #include "interrupts.h"
 #include "paging.h"
 
-void main() {
+int main() {
 
     clear();
     printf("Welcome to SimpleOS.\n");
@@ -35,7 +35,22 @@ void main() {
     // Enable paging
     enable_paging();
 
+    char *ptr = kzalloc(4096);
+    paging_set(paging_get_dir(page_dir), (void*) 0x1000, (uint32_t)ptr | page_flags);
+
+    char *ptr2 = (char *) 0x1000;
+    ptr2[0] = 'H';
+    ptr2[1] = 'E';
+    ptr2[2] = 'L';
+    ptr2[3] = 'L';
+    ptr2[4] = 'O';
+
+    printf(ptr2);
+    printf(ptr);
+
     // Enable interrupts.
     enable_interrupts();
+
+    return 0;
     
 }
