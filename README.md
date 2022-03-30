@@ -34,7 +34,8 @@ software and hardware conflicts. Paging is enabled and address can now be mapped
 
 #### Working Interrupts
 
-ISR_ZERO: Divide by zero error. Int 21 - Keyboard interrupt and triggers on key pressed.
+- ISR_ZERO: Divide by zero error. <br>
+- Int 21 - Keyboard interrupt and triggers on key pressed.
 
 <hr>
 
