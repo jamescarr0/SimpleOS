@@ -1,11 +1,10 @@
-//
-// Created by James Carr on 31/03/2022.
-//
-
-#ifndef SIMPLEOS_DISK_H
-#define SIMPLEOS_DISK_H
-
-/*
+/**
+ * @file disk.h
+ * @author James Carr
+ * @brief ATA Disk Driver header using PIO Mode and LBA28 Addressing for access upto 128Gb.
+ * @version 0.1
+ * @date 31/03/2022.
+ *
 
 REGISTERS
 
@@ -45,6 +44,10 @@ Bit	Abbreviation	Function
 
  */
 
+#ifndef SIMPLEOS_DISK_H
+#define SIMPLEOS_DISK_H
+
+#define ATA_MAX_POLL_COUNT 15
 #define ATA_PRIMARY_BUS 0x1F0
 #define ATA_SECTOR_COUNT 0x1F2
 #define ATA_LBA_LOW 0x1F3
@@ -53,29 +56,48 @@ Bit	Abbreviation	Function
 #define ATA_DRIVE 0x1F6
 #define ATA_STATUS 0x1F7
 #define ATA_CMD 0x1F7
+#define ATA_STATUS_BSY_FLAG 0x08
 
-#define MASTER_LBA_ADDRESSING(lba) (lba >> 24) | 0xE0
-
+#define LBA_MASTER_ADDRESSING(lba) (lba >> 24) | 0xE0
 #define LBA_BITS_LOW(lba) (unsigned char)(lba & 0xFF)
 #define LBA_BITS_MID(lba) (unsigned char)(lba >> 8)
 #define LBA_BITS_HIGH(lba) (unsigned char)(lba >> 16)
-
 #define LBA_PIO_READ_SECTORS 0x20
-#define ATA_STATUS_BSY_FLAG 0x08
+
 
 // Primary HDD
 // Real hard drive (physical device, not a partition that looks like another drive.
 #define HDD_TYPE_REAL_PRIMARY 0
 
-typedef struct Disk_s{
+/**
+ * Disks type for creating disk devices.
+ */
+typedef struct Disk_s {
     unsigned int type;
     unsigned int sector_size;
-}Disk;
+} Disk;
 
-int disk_read_block(Disk *disk, unsigned int lba, unsigned int blocks, void *buf);
+/**
+ * Read a block of data from a disk
+ * @param hdd The disk to read from.
+ * @param lba The starting logical block address
+ * @param blocks The number of blocks to read.
+ * @param buf A buffer to store the bytes of data.
+ * @return 0 on disk read success, -1 on failure.
+ */
+int disk_read_block(const Disk *const hdd, unsigned int lba, unsigned int total, void *buf);
 
+/**
+ * Search and initialise hard drives.
+ * NOTE: This is for future expansions, OS currently only works with a single primary disk
+ */
 void disks_init();
 
+/**
+ * Get the disk based on its index value
+ * @param disk_index The number of the disk
+ * @return The disk device found at the index.
+ */
 Disk *disk_get(unsigned int disk_index);
 
-#endif //SIMPLEOS_DISK_H
+#endif // SIMPLEOS_DISK_H

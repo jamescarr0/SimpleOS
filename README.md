@@ -44,18 +44,23 @@ software and hardware conflicts. Paging is enabled and address can now be mapped
 #### Heap
 
 Table based entry method to track the allocation/de-allocation of memory. OSDev has this as the worst performing method,
-however it is the easiest and less complex method to implement.  
+however it is the easiest and less complex method to implement.
 
 less complex != my idea of less complex :joy: :sweat_smile:
 
 Kmalloc currently returns a minimum size of 4096 bytes regardless. kmalloc(n) where n < 4096 will always allocate 4096
 bytes at a minimum. If n = 4097, then 8219 bytes will be allocated and so on. Allocation is based on 4096 blocks.
 
+#### Disk Driver
+
+SimpleOS uses ATA PIO Mode which use a tremendous amount of CPU resources. Every byte transferred between disk and CPU
+is sent through the CPU IO Port Bus, and NOT straight to memory.
+
 <hr>
 
 ### Work in progress
 
-:x: Create a disk driver in C to read from the hard disk
+:x: Implement a filesystem
 
 <hr>
 
@@ -78,3 +83,5 @@ bytes at a minimum. If n = 4097, then 8219 bytes will be allocated and so on. Al
 :white_check_mark: Implement the heap and memory allocation functions kmalloc, kzalloc and kfree.
 
 :white_check_mark: Implement paging using 4kb pages.
+
+:white_check_mark: Implement a disk driver to read from the disk. (ATA PIO Mode and LBA28)

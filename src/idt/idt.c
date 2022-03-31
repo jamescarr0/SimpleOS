@@ -30,7 +30,7 @@ idt_entry_t idt32desc_table[SIMPLEOS_MAX_INTERRUPTS]; // The actual interrupt de
 
 idtr_t idtr_desc; //  Interrupt descriptor table register instance.
 
-// Create and initilaise the IDT and IDTR
+// Create and initialise the IDT and IDTR
 void idt_init()
 {
     disable_interrupts();
