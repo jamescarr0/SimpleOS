@@ -9,8 +9,9 @@ FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99 -m32
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
-		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/idt/interrupts.o ./build/idt/pic.o \
-		./build/io/io.asm.o ./build/io/io.o ./build/memory/paging.o ./build/memory/paging.asm.o
+		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o \
+		./build/idt/interrupts.o ./build/idt/pic.o ./build/io/io.asm.o ./build/io/io.o ./build/memory/paging.o \
+		./build/memory/paging.asm.o ./build/disk/disk.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -67,6 +68,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/io/io.o: ./src/io/io.c
 	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/io/io.c -o ./build/io/io.o
+
+./build/disk/disk.o: ./src/disk/disk.c
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/disk/disk.c -o ./build/disk/disk.o
 
 ./bin/os.bin:
 	make all

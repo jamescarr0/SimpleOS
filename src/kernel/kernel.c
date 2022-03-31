@@ -12,6 +12,7 @@
 #include "kheap.h"
 #include "interrupts.h"
 #include "paging.h"
+#include "disk.h"
 
 int main() {
 
@@ -20,6 +21,9 @@ int main() {
 
     // Initialise the heap.
     kheap_init();
+
+    // Search and initialise disks, NOTE: OS currently uses the primary master only.
+    disks_init();
 
     // Initialize the IDT.
     idt_init();
@@ -35,18 +39,11 @@ int main() {
     // Enable paging
     enable_paging();
 
-    char *ptr = kzalloc(4096);
-    paging_set(paging_get_dir(page_dir), (void*) 0x1000, (uint32_t)ptr | page_flags);
-
-    char *ptr2 = (char *) 0x1000;
-    ptr2[0] = 'H';
-    ptr2[1] = 'E';
-    ptr2[2] = 'L';
-    ptr2[3] = 'L';
-    ptr2[4] = 'O';
-
-    printf(ptr2);
-    printf(ptr);
+    // Driver code to test disk read in debugger.
+    Disk *hdd = disk_get(0);
+    char buf[512];
+    int res = disk_read_block(hdd, 0, 1, buf);
+    if(res < 0) printf("Error: Failed to read disk.\n");
 
     // Enable interrupts.
     enable_interrupts();
