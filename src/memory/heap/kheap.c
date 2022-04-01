@@ -34,7 +34,7 @@ void kheap_init()
     int res = heap_create(&kernel_heap, (void *) KERNEL_HEAP_ADDRESS, heap_end, &kernel_heap_table);
     if (res < 0) 
     {
-        printf("Kernel Panic TODO: Failed to init and create heap!\n");
+        print("Kernel Panic TODO: Failed to init and create heap!\n");
     }
 }
 

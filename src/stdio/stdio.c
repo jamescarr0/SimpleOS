@@ -10,52 +10,51 @@
 
 #include <stdint.h>
 #include "strings.h"
+#include "stdio.h"
 
-#define VGA_WIDTH 80
-#define VGA_HEIGHT 25
-#define FONT_COLOR 15
-
-int terminal_col = 0; // Terminal columns
-int terminal_row = 0; // Terminal row
-
-static volatile uint16_t *video_memory = (volatile uint16_t *)0xB8000; // Text video memory.
+static Terminal terminal = {
+        .col_pos = 0,
+        .row_pos = 0,
+        .framebuffer = (volatile uint16_t *)0xB8000 // Text video memory.
+};
 
 /* Text video memory requires two bytes per character.  An ASCII byte, and an attribute
 byte, which is the colour of the character to be sent to video memory.
 X86 is little endian so the bytes need to be converted (reversed) accordingly with
 a bitshift left and biwide or
  */
+
 static uint16_t create_video_char(const char character, const int color)
 {
-    return (color << 8) | character; // Convert to little endianess. Swap bytes.
+    return (color << 8) | character; // Convert to little endian. Swap bytes.
 }
 
 /* Inserts the 'two byte' text video character into video memory at location x, y */
-static void send_to_video_memory(const int x, const int y, const char character, const int color)
+static void send_to_framebuffer(const char character, const int color)
 {
-    video_memory[(y * VGA_WIDTH) + x] = create_video_char(character, color);
+    terminal.framebuffer[(terminal.row_pos * VGA_WIDTH) + terminal.col_pos] = create_video_char(character, color);
 }
 
 /* Update the terminal cursor position and send the character to be inserted into video memory to the
-video memory helper function 'send_to_video_memory' */
+video memory helper function 'send_to_framebuffer' */
 static void putchar(const char character, const int color)
 {
     if (character == '\n') // Increment the terminal row position when reading a newline.
     {
-        terminal_row++;
-        terminal_col = 0;
+        terminal.row_pos++;
+        terminal.col_pos = 0;
         return;
     }
 
     // Send the char to video memory.
-    send_to_video_memory(terminal_col, terminal_row, character, color);
-    terminal_col++;
+    send_to_framebuffer(character, color);
+    terminal.col_pos++;
 
     // Wrap text to a newline when the end of the terminal is reached.
-    if (terminal_col >= VGA_WIDTH)
+    if (terminal.col_pos >= VGA_WIDTH)
     {
-        terminal_row++;
-        terminal_col = 0;
+        terminal.row_pos++;
+        terminal.col_pos = 0;
     }
 }
 
@@ -64,18 +63,22 @@ static void putchar(const char character, const int color)
  */
 void clear(void)
 {
-    video_memory = (volatile uint16_t *)0xB8000;
-    for (int y = 0; y < VGA_HEIGHT; ++y)
+    terminal.framebuffer = (volatile uint16_t *)0xB8000;
+    uint8_t *y = &terminal.row_pos;
+    uint8_t *x = &terminal.col_pos;
+
+    for (*y = 0; *y < VGA_HEIGHT; ++*y)
     {
-        for (int x = 0; x < VGA_WIDTH; ++x)
-            send_to_video_memory(x, y, ' ', 0);
+        for (*x = 0; *x < VGA_WIDTH; ++*x)
+            send_to_framebuffer(' ', 0);
     }
-    terminal_col = 0;
-    terminal_row = 0;
+
+    terminal.col_pos = 0;
+    terminal.row_pos = 0;
 }
 
-/* C Style printf function for printing characters to the terminal */
-void printf(const char *const str)
+/* C Style print function for printing characters to the terminal */
+void print(const char *const str)
 {
     for (size_t i = 0; i < strlen(str); ++i)
     {

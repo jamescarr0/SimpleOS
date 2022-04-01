@@ -17,7 +17,7 @@
 int main() {
 
     clear();
-    printf("Welcome to SimpleOS.\n");
+    print("Welcome to SimpleOS.\n");
 
     // Initialise the heap.
     kheap_init();
@@ -43,7 +43,7 @@ int main() {
     Disk *hdd = disk_get(0);
     char buf[512];
     int res = disk_read_block(hdd, 0, 1, buf);
-    if(res < 0) printf("Error: Failed to read disk.\n");
+    if(res < 0) print("Error: Failed to read disk.\n");
 
     // Enable interrupts.
     enable_interrupts();
