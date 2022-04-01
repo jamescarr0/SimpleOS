@@ -20,6 +20,6 @@
  * @param str NULL terminated string 
  * @return size_t - Length of a null terminated string (decimal)
  */
-size_t strlen(const char *str);
+size_t strlen(const char *const str);
 
 #endif //SIMPLEOS_STRINGS_H

@@ -16,9 +16,10 @@ size_t strlen(const char *const str) {
      * Length of NULL terminated string
      */
     size_t length = 0;
+    char *p = str;
 
-    while (str[length])
-        ++length;
+    while (*p++)
+        length++;
 
     return length;
 }
