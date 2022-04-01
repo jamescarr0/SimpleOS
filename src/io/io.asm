@@ -27,7 +27,6 @@ section .asm
 
 global insb
 global insw
-
 global outb
 global outw
 
@@ -35,8 +34,9 @@ insb:
     push ebp
     mov ebp, esp
 
-    xor eax, eax    ; Zero eax register.
-    in al, dx       ; read a byte from port in DX into AL
+    xor eax, eax        ; Zero eax register.
+    mov edx, [ebp+8]    ;
+    in al, dx           ; read a byte from port in DX into AL
 
     pop ebp
     ret
@@ -46,6 +46,7 @@ insw:
     mov ebp, esp
 
     xor eax, eax    ; Zero eax register
+    mov edx, [ebp+8]    ;
     in ax, dx       ; Read a word from port in DX to AX
 
     pop ebp

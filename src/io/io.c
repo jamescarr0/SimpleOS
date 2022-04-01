@@ -16,4 +16,9 @@
  *
  */
 
-/* Currently implementing static inline functions defined in the io.h */
+#include "io.h"
+
+void io_wait(void)
+{
+    outb(0x80, 0);
+}

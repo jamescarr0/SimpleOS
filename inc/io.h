@@ -5,16 +5,7 @@
  * @version 0.1
  * @date 2022-03-03
  *
- * ASM code now replaced with static inline assembly, example code from
- * OS Dev.
- *
- * io.asm does work; file kept as a backup incase gcc compilation produces
- * unacceptable results.
- *
- * " What follows is a collection of inline assembly functions so common
- * that they should be useful to most OS developers using GCC ""
- * https://wiki.osdev.org/Inline_Assembly/Examples
- *
+ * Reading and writing declarations for transferring data to and from memory and disks.
  */
 
 #ifndef SIMPLEOS_IO_H
@@ -22,119 +13,44 @@
 
 #include <stdint.h>
 
-void _PIC_remap(int offset1, int offset2);
-
-/******************** ASM Funcs begin ********************
+/**
+ * Read a byte of data.
+ * @param port the port to read from.
+ * @return byte read from port
  *
- * Working as should.  Replaced with C inline functions/assembly.
- * If gcc introduces compilation bugs or strange asm syntax
- * revert back to working asm routines in found io.asm and
- * declared below
+ * Calls an external function written in assembly to read a byte from the specified port.
  */
-
-// unsigned char io_read_byte(unsigned short port);
-
-// unsigned short io_read_word(unsigned short port);
-
-// void io_write_byte(unsigned short port, unsigned data);
-
-// void io_write_word(unsigned short port, unsigned data);
-
-/******************** ASM Funcs end ********************/
-
-/* Inline Assembly Functions */
+extern uint8_t insb(uint16_t port);
 
 /**
- * @brief Write a byte to the specified I/O port
+ * Read a word of data
+ * @param port the port to read from
+ * @return word read from port
  *
- * @param port The I/O port to write a byte to.
- * @param val The value (byte) to be sent to the I/O port.
+ * Calls an external function written in assembly to read a word from the specified port.
  */
-static inline void outb(uint16_t port, uint8_t val)
-{
-    __asm__ volatile("out %0, %1"
-                     :
-                     : "a"(val), "Nd"(port));
-}
+extern uint16_t insw(uint16_t port);
 
 /**
- * @brief Write a word to the specified I/O port
- *
- * @param port The I/O port to write a word to.
- * @param val The value (word) to be sent to the I/O port.
+ * Write a byte of data to a port.
+ * @param port The port to send a byte to.
+ * @param data The data to send.
  */
-static inline void outw(uint16_t port, uint16_t val)
-{
-    __asm__ volatile("out %0, %1"
-                     :
-                     : "a"(val), "Nd"(port));
-}
+extern void outb(uint16_t port, uint8_t data);
 
 /**
- * @brief Write a long 32-bit value to the specified I/O port
- *
- * @param val The long value (32-bit) to be sent to the I/O port.
- * @param port The I/O port to write a long value to.
+ * Write a word of data to a port.
+ * @param port The port to send word to
+ * @param data THe data to send
  */
-static inline void outl(uint16_t port, uint32_t val)
-{
-    __asm__ volatile("out %0, %1"
-                     :
-                     : "a"(val), "Nd"(port));
-}
+extern void outw(uint16_t port, uint16_t data);
 
 /**
- * @brief Read a byte from the specified I/O port
- *
- * @param port The I/O port to read a byte from.
- * @return uint8_t - A byte from the I/O port.
+ * Used to wait a small but imprecise amount of time after sending command to PIC.
+ * This is probably completely unnecessary but for the sake of backward compatability and a lack of
+ * thorough OS development and PIC knowledge, we shall continue to use the function while researching the history and
+ * documentation around it.
  */
-static inline uint8_t insb(uint16_t port)
-{
-    uint8_t ret;
-    __asm__ volatile("inb %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(port));
-    return ret;
-}
-
-/**
- * @brief Read a word from the specified I/O port
- *
- * @param port The I/O port to read a word from/
- * @return uint16_t - A word from the I/O port.
- */
-static inline uint16_t insw(uint16_t port)
-{
-    uint16_t ret;
-    __asm__ volatile("inw %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(port));
-    return ret;
-}
-
-/**
- * @brief Read a long 32-bit value from the specified I/O port
- *
- * @param port The I/O port to read a long word from.
- * @return uint32_t - A long (32-bit) word from the I/O port.
- */
-static inline uint32_t insl(uint16_t port)
-{
-    uint32_t ret;
-    __asm__ volatile("inl %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(port));
-    return ret;
-}
-
-/**
- * @brief Wait a very small amount of time (1 to 4 microseconds, generally). 
- * 
- */
-static inline void io_wait(void)
-{
-    outb(0x80, 0);
-}
+void io_wait(void);
 
 #endif

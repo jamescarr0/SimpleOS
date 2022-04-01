@@ -47,7 +47,6 @@ Bit	Abbreviation	Function
 #ifndef SIMPLEOS_DISK_H
 #define SIMPLEOS_DISK_H
 
-#define ATA_MAX_POLL_COUNT 15
 #define ATA_PRIMARY_BUS 0x1F0
 #define ATA_SECTOR_COUNT 0x1F2
 #define ATA_LBA_LOW 0x1F3

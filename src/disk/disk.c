@@ -28,10 +28,6 @@ static int disk_poll_ready() {
 
     while (!(bsy & ATA_STATUS_BSY_FLAG)) {
         bsy = insb(ATA_STATUS);
-
-        if (poll_count++ == ATA_MAX_POLL_COUNT) {
-            return -EIO;
-        }
     }
     return 0;
 }
