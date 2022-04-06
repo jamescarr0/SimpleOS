@@ -22,8 +22,7 @@ static int disk_poll_ready() {
 
     // Check the BSY Flag in the status register
     // Bit 7 (BSY) - Indicates the drive is preparing to send/receive data (wait for it to clear).
-    // In case of 'hang' (it never clears), do a software reset.
-    uint8_t poll_count = 0;
+    // In case of 'hang' (it never clears), do a software reset. << Not currently implemented.
     uint8_t bsy = insb(ATA_STATUS);
 
     while (!(bsy & ATA_STATUS_BSY_FLAG)) {

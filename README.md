@@ -61,6 +61,7 @@ is sent through the CPU IO Port Bus, and NOT straight to memory.
 ### Work in progress
 
 :x: Implement a filesystem
+:white_check_mark: - Parse and tokenise an absolute path string
 
 <hr>
 
@@ -85,3 +86,5 @@ is sent through the CPU IO Port Bus, and NOT straight to memory.
 :white_check_mark: Implement paging using 4kb pages.
 
 :white_check_mark: Implement a disk driver to read from the disk. (ATA PIO Mode and LBA28)
+
+:white_check_mark: - Parse and tokenise an absolute path string

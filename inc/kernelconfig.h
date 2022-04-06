@@ -24,4 +24,6 @@
 
 #define HDD_SECTOR_SIZE 512
 
+#define MAX_DIRECTORY_PATH 512
+
 #endif

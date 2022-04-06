@@ -13,6 +13,7 @@
 #include "interrupts.h"
 #include "paging.h"
 #include "disk.h"
+#include "path_parser.h"
 
 int main() {
 
@@ -39,7 +40,7 @@ int main() {
     // Enable paging
     enable_paging();
 
-    // Driver code to test disk read in debugger.
+    // Driver code to test and debug disk read.
     Disk *hdd = disk_get(0);
     char buf[512];
     int res = disk_read_block(hdd, 0, 1, buf);
@@ -47,6 +48,13 @@ int main() {
 
     // Enable interrupts.
     enable_interrupts();
+
+    // Driver code for testing and debugging path parser.
+    char *dir = "0:/Users/home/james/bin/bash.sh";
+    PathRoot *path_root = kmalloc(sizeof(PathRoot));
+    pathparser_parse(path_root, dir, NULL);
+    for(;;); // Hang for debugging
+    pathparser_free(path_root);
 
     return 0;
     

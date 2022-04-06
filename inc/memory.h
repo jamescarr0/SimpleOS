@@ -23,4 +23,14 @@
  */
 void *memset(void *ptr, int c, size_t size);
 
+/**
+ * Compares two byte sequences.
+ *
+ * @param s1 The first string for comparison
+ * @param s2 The second string for comparison
+ * @param n The total number of bytes to compare
+ * @return int: greater than, equal to, or less than 0.
+ */
+int memcmp(const void *s1, const void *s2, size_t n);
+
 #endif // SIMPLEOS_MEMORY_H
