@@ -46,9 +46,9 @@ int main() {
 
     // Driver code for debugging reading bytes in memory.
     DiskStream *stream = disk_stream_new(0);
-    disk_stream_seek(stream, 0x214);
-    unsigned char c[10];
-    disk_stream_read(stream, &c, 10);
+    disk_stream_seek(stream, 0);
+    unsigned char c[1501] = {0};
+    disk_stream_read(stream, &c, 1500);
 
     while(1);
 
