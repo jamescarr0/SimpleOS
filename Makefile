@@ -11,7 +11,7 @@ FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
 		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o \
 		./build/idt/interrupts.o ./build/idt/pic.o ./build/io/io.asm.o ./build/io/io.o ./build/memory/paging.o \
-		./build/memory/paging.asm.o ./build/disk/disk.o ./build/fs/path_parser.o
+		./build/memory/paging.asm.o ./build/disk/disk.o ./build/disk/disk_stream.o ./build/fs/path_parser.o
 
 all: ./bin/boot.bin ./bin/kernel.bin
 	rm -rf ./bin/os.bin
@@ -70,7 +70,10 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/io/io.c -o ./build/io/io.o
 
 ./build/disk/disk.o: ./src/disk/disk.c
+./build/disk/disk_stream.o: ./src/disk/disk_stream.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/disk/disk.c -o ./build/disk/disk.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/disk/disk_stream.c -o ./build/disk/disk_stream.o
+
 
 ./build/fs/path_parser.o: ./src/fs/path_parser.c
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/fs/path_parser.c -o ./build/fs/path_parser.o

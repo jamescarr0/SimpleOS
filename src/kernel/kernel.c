@@ -14,6 +14,7 @@
 #include "paging.h"
 #include "disk.h"
 #include "path_parser.h"
+#include "disk_stream.h"
 
 int main() {
 
@@ -40,21 +41,16 @@ int main() {
     // Enable paging
     enable_paging();
 
-    // Driver code to test and debug disk read.
-    Disk *hdd = disk_get(0);
-    char buf[512];
-    int res = disk_read_block(hdd, 0, 1, buf);
-    if(res < 0) print("Error: Failed to read disk.\n");
-
     // Enable interrupts.
     enable_interrupts();
 
-    // Driver code for testing and debugging path parser.
-    char *dir = "0:/Users/home/james/bin/bash.sh";
-    PathRoot *path_root = kmalloc(sizeof(PathRoot));
-    pathparser_parse(path_root, dir, NULL);
-    for(;;); // Hang for debugging
-    pathparser_free(path_root);
+    // Driver code for debugging reading bytes in memory.
+    DiskStream *stream = disk_stream_new(0);
+    disk_stream_seek(stream, 0x214);
+    unsigned char c[10];
+    disk_stream_read(stream, &c, 10);
+
+    while(1);
 
     return 0;
     

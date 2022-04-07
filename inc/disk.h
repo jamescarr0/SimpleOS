@@ -95,7 +95,7 @@ void disks_init();
 /**
  * Get the disk based on its index value
  * @param disk_index The number of the disk
- * @return The disk device found at the index.
+ * @return pointer to disk device found at the index, or 0 (NULL) if disk not found.
  */
 Disk *disk_get(unsigned int disk_index);
 
