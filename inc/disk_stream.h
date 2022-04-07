@@ -31,10 +31,32 @@ typedef struct DiskStream_s {
     struct Disk_s *disk;
 } DiskStream;
 
+/**
+ * @brief Initialise a new disk stream.
+ * 
+ * @param disk_num The drive number to stream the data.
+ * @return DiskStream* A pointer to the new DiskStream.
+ * 
+ * A disk stream allows n bytes to be transffered from the disk.
+ */
 DiskStream *disk_stream_new(const unsigned int disk_num);
 
+/**
+ * @brief Set the starting byte address,
+ * 
+ * @param stream a DiskStream
+ * @param pos The byte position to start the read from.
+ */
 void disk_stream_seek(DiskStream *stream, const unsigned int pos);
 
+/**
+ * @brief Read data from a set starting position
+ * 
+ * @param stream A DiskSteam
+ * @param buf The buffer to read data into.
+ * @param total Total amount of bytes to read.
+ * @return int : 0 on success, negative value on error.
+ */
 int disk_stream_read(DiskStream *stream, void *buf, unsigned int total);
 
 #endif
