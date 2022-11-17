@@ -1,19 +1,52 @@
 CC=i686-elf-gcc
 LD=i686-elf-ld
-
-INCLUDES = -Iinc
+NASM = nasm
 
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels
 FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
 FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99 -m32
-FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
+FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/stdio.o ./build/strings.o \
-		./build/memory/memory.o ./build/memory/heap.o ./build/memory/kheap.o ./build/idt/idt.asm.o ./build/idt/idt.o \
-		./build/idt/interrupts.o ./build/idt/pic.o ./build/io/io.asm.o ./build/io/io.o ./build/memory/paging.o \
-		./build/memory/paging.asm.o ./build/disk/disk.o ./build/disk/disk_stream.o ./build/fs/path_parser.o
+SRCDIR := ./src
+BUILDDIR := bin
+OBJDIR := build
 
-all: ./bin/boot.bin ./bin/kernel.bin
+ASM_SRC = $(shell find $(SRCDIR) -name "*.asm" | grep -v boot | grep -v kernel)
+C_SRC = $(shell find $(SRCDIR) -name "*.c" | grep -v ./kernel)
+
+C_OBJS := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.c.o, $(C_SRC))
+ASM_OBJS := $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%.asm.o, $(ASM_SRC))
+
+default: $(ASM_OBJS) $(C_OBJS) boot kernel binary
+
+$(OBJDIR)/%.asm.o : $(SRCDIR)/%.asm
+	@ echo !==== COMPILING ASM SRC:
+	@ echo $^
+	@ mkdir -p $(@D)
+	$(NASM) -f elf -g $^ -o $@	
+
+$(OBJDIR)/%.c.o : $(SRCDIR)/%.c
+	@ echo !==== COMPILING C SRC: 
+	@ echo $^
+	@ mkdir -p $(@D)
+	$(CC) $(FLAGS) -c $^ -o $@
+
+boot: ./src/boot/boot.asm
+	@ echo !==== COMPILING BOOT ASM: 
+	@ echo $^
+	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
+
+./build/kernel/kernel.asm.o: src/kernel/kernel.asm
+./build/kernel/kernel.o : src/kernel/kernel.c
+	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel/kernel.asm.o
+	$(CC) $(INCLUDES) $(FLAGS) -c ./src/kernel/kernel.c -o ./build/kernel/kernel.c.o
+
+kernel: ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o
+	@ echo !==== BUILDING KERNEL: 
+	$(LD) -g -relocatable ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o $(C_OBJS) $(ASM_OBJS) -o ./build/kernelfull.o
+	$(CC) $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o	
+
+binary:
 	rm -rf ./bin/os.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
@@ -26,67 +59,13 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 	dd if=/dev/zero bs=512 count=100 >> ./bin/os.bin  
 
-./bin/kernel.bin: $(FILES)
-	$(LD) -g -relocatable $(FILES) -o ./build/kernelfull.o
-	$(CC) $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o
-	
-./bin/boot.bin: ./src/boot/boot.asm
-	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
-
-./build/kernel.asm.o: src/kernel/kernel.asm
-./build/kernel.o : src/kernel/kernel.c
-	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel.asm.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/kernel/kernel.c -o ./build/kernel.o
-
-./build/stdio.o : src/stdio/stdio.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/stdio/stdio.c -o ./build/stdio.o
-
-./build/strings.o: src/strings/strings.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/strings/strings.c -o ./build/strings.o
-
-./build/memory/memory.o: ./src/memory/memory.c
-./build/memory/heap.o: ./src/memory/heap/heap.c
-./build/memory/kheap.o: ./src/memory/heap/kheap.c
-./build/memory/paging.o: ./src/memory/paging/paging.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/memory.c -o ./build/memory/memory.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap/heap.c -o ./build/memory/heap.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/heap/kheap.c -o ./build/memory/kheap.o
-
-	nasm -f elf -g ./src/memory/paging/paging.asm -o ./build/memory/paging.asm.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/memory/paging/paging.c -o ./build/memory/paging.o
-
-./build/idt/idt.asm.o: ./src/idt/idt.asm
-./build/idt/idt.o: ./src/idt/idt.c
-./build/idt/pic.o: ./src/idt/PIC/pic.c
-./build/idt/interrupts.o: ./src/idt/interrupts/interrupts.c
-	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/idt.c -o ./build/idt/idt.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/PIC/pic.c -o ./build/idt/pic.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/idt/interrupts/interrupts.c -o ./build/idt/interrupts.o
-
-./build/io/io.asm.o: ./src/io/io.asm
-./build/io/io.o: ./src/io/io.c
-	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/io/io.c -o ./build/io/io.o
-
-./build/disk/disk.o: ./src/disk/disk.c
-./build/disk/disk_stream.o: ./src/disk/disk_stream.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/disk/disk.c -o ./build/disk/disk.o
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/disk/disk_stream.c -o ./build/disk/disk_stream.o
-
-
-./build/fs/path_parser.o: ./src/fs/path_parser.c
-	$(CC) $(INCLUDES) $(FLAGS) -c ./src/fs/path_parser.c -o ./build/fs/path_parser.o
-
-./bin/os.bin:
-	make all
-
-run: all
+run: default
 	qemu-system-i386 -hda ./bin/os.bin
 
 debug: ./bin/os.bin
 	gdb-multiarch -ex "target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio" \
 		-ex "add-symbol-file ./build/kernelfull.o 0x100000"
+
 clean:
 	rm -rf ./bin/*.bin
-	rm -rf ./build/kernelfull.o $(FILES)
+	rm -rf ./build/kernelfull.o $(C_OBJS) $(ASM_OBJS)
