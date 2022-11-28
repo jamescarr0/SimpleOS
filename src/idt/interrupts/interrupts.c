@@ -25,7 +25,7 @@ void no_interrupt_handler(void)
 // ISR 0, Divide by zero definition
 void isr_zero()
 {
-    print("Error: Divide By Zero\n");
+    print("Error: Divide By Zero\n", red);
     for (;;)
         ;
 }
@@ -33,6 +33,6 @@ void isr_zero()
 // 0x21 : Keyboard Interrupt handler
 void int_handler_21(void)
 {
-    print("Keyboard interrupt triggered\n");
+    print("Keyboard interrupt triggered\n", green);
     PIC_send_EOI(IRQ_KEYBOARD);
 }

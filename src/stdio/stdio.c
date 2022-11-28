@@ -78,10 +78,10 @@ void clear(void)
 }
 
 /* C Style print function for printing characters to the terminal */
-void print(const char *const str)
+void print(const char *const str, enum Font_fg color)
 {
     for (size_t i = 0; i < strlen(str); ++i)
     {
-        putchar(str[i], FONT_COLOR);
+        putchar(str[i], color);
     }
 }

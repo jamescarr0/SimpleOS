@@ -20,7 +20,25 @@
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
-#define FONT_COLOR 15
+
+enum Font_fg {
+    black,
+    blue,
+    green,
+    cyan,
+    red,
+    magenta,
+    brown,
+    light_gray,
+    dark_gray,
+    light_blue,
+    light_green,
+    light_cyan,
+    light_red,
+    light_magenta,
+    yellow,
+    white
+};
 
 typedef struct Terminal_s{
     uint8_t col_pos;
@@ -37,7 +55,8 @@ void clear(void);
 /**
  * @brief C Style print function.
  * @param str String to print to stdout (console)
+ * @param color Font color.
  */
-void print(const char *const str);
+void print(const char *const str, enum Font_fg color);
 
 #endif //SIMPLEOS_STDIO_H

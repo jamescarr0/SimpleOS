@@ -19,7 +19,12 @@
 int main() {
 
     clear();
-    print("Welcome to SimpleOS.\n");
+    print("Welcome to SimpleOS.\n", white);
+    for (size_t i = 0; i <= white; i++)
+    {
+        print("Hello World!!\n", i);
+    }
+    
 
     // Initialise the heap.
     kheap_init();

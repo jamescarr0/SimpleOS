@@ -7,17 +7,17 @@ FLAGS += -falign-loops -fstrength-reduce -fomit-frame-pointer -fno-builtin
 FLAGS += -finline-functions -Wno-unused-label -Wno-cpp  -std=gnu99 -m32
 FLAGS += -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
-SRCDIR := ./src
-BUILDDIR := bin
-OBJDIR := build
+SRCDIR = src
+BUILDDIR = bin
+OBJDIR = build
 
-ASM_SRC = $(shell find $(SRCDIR) -name "*.asm" | grep -v boot | grep -v kernel)
+ASM_SRC = $(shell find $(SRCDIR) -name "*.asm" | egrep -v "boot|kernel")
 C_SRC = $(shell find $(SRCDIR) -name "*.c" | grep -v ./kernel)
 
 C_OBJS := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.c.o, $(C_SRC))
 ASM_OBJS := $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%.asm.o, $(ASM_SRC))
 
-default: $(ASM_OBJS) $(C_OBJS) boot kernel binary
+default: $(ASM_OBJS) $(C_OBJS) boot kernelbin os
 
 $(OBJDIR)/%.asm.o : $(SRCDIR)/%.asm
 	@ echo !==== COMPILING ASM SRC:
@@ -41,12 +41,12 @@ boot: ./src/boot/boot.asm
 	nasm -f elf -g ./src/kernel/kernel.asm -o ./build/kernel/kernel.asm.o
 	$(CC) $(INCLUDES) $(FLAGS) -c ./src/kernel/kernel.c -o ./build/kernel/kernel.c.o
 
-kernel: ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o
+kernelbin: ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o
 	@ echo !==== BUILDING KERNEL: 
-	$(LD) -g -relocatable ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o $(C_OBJS) $(ASM_OBJS) -o ./build/kernelfull.o
-	$(CC) $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o	
+	$(LD) -g -relocatable ./build/kernel/kernel.asm.o ./build/kernel/kernel.c.o $(C_OBJS) $(ASM_OBJS) -o $(OBJDIR)/$@.o
+	$(CC) $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib $(OBJDIR)/$@.o
 
-binary:
+os:
 	rm -rf ./bin/os.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
@@ -57,7 +57,7 @@ binary:
 	# So we dont have to keep calculating kernel size as its being built.
 	# 100 Sectors will be loaded into memory from the bootloader.
 
-	dd if=/dev/zero bs=512 count=100 >> ./bin/os.bin  
+	dd if=/dev/zero bs=512 count=100 >> ./bin/os.bin
 
 run: default
 	qemu-system-i386 -hda ./bin/os.bin
@@ -68,4 +68,5 @@ debug: ./bin/os.bin
 
 clean:
 	rm -rf ./bin/*.bin
-	rm -rf ./build/kernelfull.o $(C_OBJS) $(ASM_OBJS)
+	rm -rf ./build/kernel/*
+	rm -rf ./build/kernelbin.o $(C_OBJS) $(ASM_OBJS)
