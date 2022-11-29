@@ -15,6 +15,7 @@
 #include "io.h"
 #include "interrupts.h"
 #include "pic.h"
+#include "input/keyboard.h"
 
 // Default interrupt handler when no ISR is assigned to a IRQ
 void no_interrupt_handler(void)
@@ -33,6 +34,14 @@ void isr_zero()
 // 0x21 : Keyboard Interrupt handler
 void int_handler_21(void)
 {
-    print("Keyboard interrupt triggered\n", green);
+    // Key release info: https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+
+    // uint8_t key_code = insb(0x60); // Read keypress from buffer
+
+    // char *c = scanmap[key_code].character;  // Get key from mapping.
+    // if(key_code < 0x80) print(c, green);
+    // else if (key_code > 128) { /* A key has been released, KEY UP event */ } 
+
+    handle_keyboard_event();
     PIC_send_EOI(IRQ_KEYBOARD);
 }
