@@ -59,4 +59,9 @@ void clear(void);
  */
 void print(const char *const str, enum Font_fg color);
 
+/**
+ * @brief Delete the previous character on screen when backspace is pressed.
+ */
+void print_backspace();
+
 #endif //SIMPLEOS_STDIO_H

@@ -13,9 +13,9 @@
 #include "stdio.h"
 
 static Terminal terminal = {
-        .col_pos = 0,
-        .row_pos = 0,
-        .framebuffer = (volatile uint16_t *)0xB8000 // Text video memory.
+    .col_pos = 0,
+    .row_pos = 0,
+    .framebuffer = (volatile uint16_t *)0xB8000 // Text video memory.
 };
 
 /* Text video memory requires two bytes per character.  An ASCII byte, and an attribute
@@ -84,4 +84,19 @@ void print(const char *const str, enum Font_fg color)
     {
         putchar(str[i], color);
     }
+}
+
+/* Deletes the previous character in the console */
+void print_backspace()
+{
+    if (terminal.col_pos == 0)
+    {
+        terminal.col_pos = (VGA_WIDTH)-1;
+        terminal.row_pos--;
+    }
+    else
+    {
+        terminal.col_pos--;
+    }
+    send_to_framebuffer(' ', white);
 }
