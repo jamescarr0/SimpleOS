@@ -57,8 +57,10 @@ void idt_init()
     }
 
     // Set Interrupt service routines.
+    // Remapped to start at 0x20
     idt_set(0, isr_zero, attributes); // Interrupt 0 - Divide by zero error
-    idt_set(0x21, int21_wrapper, attributes);
+    idt_set(0x20, int20_wrapper, attributes); // Interupt 0 (remapped 0x20) System timer.
+    idt_set(0x21, int21_wrapper, attributes); // Interupt 1 (remapped 0x21) Keyboard.
 
     // Load idt table
     lidt(&idtr_desc);

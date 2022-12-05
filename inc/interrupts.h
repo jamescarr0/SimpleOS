@@ -33,6 +33,7 @@
  * @brief Interrupt 21 assembly wrapper
  *
  */
+extern void int20_wrapper(void);
 extern void int21_wrapper(void);
 
 /**
@@ -84,3 +85,5 @@ void isr_zero();
  *
  */
 void int_handler_21(void);
+
+void int_handler_20(void);

@@ -15,17 +15,16 @@
 #include "disk.h"
 #include "path_parser.h"
 #include "disk_stream.h"
+#include "time/tick.h"
+
 
 int main() {
 
-    clear();
-    print("Welcome to SimpleOS.\n", white);
-    for (size_t i = 0; i <= white; i++)
-    {
-        print("Hello World!!\n", i);
-    }
+    init_PIT();
     
-
+    clear();
+    print("Welcome to SimpleOS.\n", green);
+    
     // Initialise the heap.
     kheap_init();
 

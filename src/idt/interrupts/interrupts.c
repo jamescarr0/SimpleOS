@@ -16,6 +16,7 @@
 #include "interrupts.h"
 #include "pic.h"
 #include "input/keyboard.h"
+#include "time/tick.h"
 
 // Default interrupt handler when no ISR is assigned to a IRQ
 void no_interrupt_handler(void)
@@ -29,6 +30,20 @@ void isr_zero()
     print("Error: Divide By Zero\n", red);
     for (;;)
         ;
+}
+
+/**
+ * @brief 0x20 : System Tick. 18.222 times per second.
+ * http://www.osdever.net/bkerndev/Docs/pit.htm
+ *
+ * By default, the timer fires 18.222 times
+ *  per second. Why 18.222Hz? Some engineer at IBM must've
+ *  been smoking something funky
+ * 
+ */
+void int_handler_20(void) {
+    handle_tick();
+    PIC_send_EOI(IRQ_TIMER);
 }
 
 // 0x21 : Keyboard Interrupt handler
